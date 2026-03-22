@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomi 🐾 — Your Kawaii AI Friend</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --caramel:#c87941;--caramel-lt:#e8a96a;--espresso:#4a2c1a;
+    --latte:#f5e6d3;--cream:#fdf6ee;--mocha:#7a4a2c;
+    --foam:#fefaf4;--sage:#a8c4a0;--peach:#f7c4a0;
+    --honey:#f5c842;--bg:#fdf0e0;--text:#3d2010;--text-lt:#8a6040;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Quicksand',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background-image:radial-gradient(ellipse at 15% 20%,rgba(200,121,65,.18) 0%,transparent 55%),radial-gradient(ellipse at 85% 75%,rgba(168,196,160,.2) 0%,transparent 50%),radial-gradient(ellipse at 50% 95%,rgba(247,196,160,.15) 0%,transparent 45%);
+    overflow:hidden;position:relative;}
+  #blossom-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.22;pointer-events:none;animation:floatBlob 9s ease-in-out infinite alternate;}
+  .b1{width:320px;height:320px;background:var(--caramel);top:-90px;left:-90px;animation-delay:0s}
+  .b2{width:260px;height:260px;background:var(--sage);bottom:-70px;right:-70px;animation-delay:3s}
+  .b3{width:200px;height:200px;background:var(--peach);bottom:25%;left:-50px;animation-delay:5s}
+  .b4{width:160px;height:160px;background:var(--honey);top:25%;right:-40px;animation-delay:1.5s}
+  @keyframes floatBlob{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,18px) scale(1.06)}}
+  .deco{position:fixed;pointer-events:none;opacity:.07;font-size:1.6rem;animation:decoFloat 12s ease-in-out infinite;}
+  @keyframes decoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-25px) rotate(12deg)}}
+  .chat-wrapper{width:100%;max-width:520px;height:100vh;max-height:830px;display:flex;flex-direction:column;
+    background:rgba(253,246,238,.9);backdrop-filter:blur(22px);border-radius:32px;
+    border:1.5px solid rgba(200,121,65,.3);
+    box-shadow:0 32px 80px rgba(120,60,20,.14),0 8px 28px rgba(120,60,20,.08),inset 0 1px 0 rgba(255,255,255,.7);
+    overflow:hidden;position:relative;z-index:10;margin:20px;}
+  .chat-header{padding:16px 20px 14px;
+    background:linear-gradient(135deg,rgba(200,121,65,.5) 0%,rgba(168,196,160,.4) 60%,rgba(247,196,160,.35) 100%);
+    border-bottom:1.5px solid rgba(200,121,65,.2);display:flex;align-items:center;gap:13px;}
+  .avatar-ring{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--caramel),var(--sage));
+    padding:3px;flex-shrink:0;box-shadow:0 4px 16px rgba(120,60,20,.3);animation:pulseRing 3s ease-in-out infinite;}
+  @keyframes pulseRing{0%,100%{box-shadow:0 4px 16px rgba(120,60,20,.3)}50%{box-shadow:0 4px 28px rgba(120,60,20,.55)}}
+  .avatar-inner{width:100%;height:100%;border-radius:50%;background:var(--latte);display:flex;align-items:center;justify-content:center;}
+  .avatar-face{font-size:2rem;transition:all .4s cubic-bezier(.34,1.56,.64,1);line-height:1;}
+  .header-info{flex:1;}
+  .header-name{font-family:'Nunito',sans-serif;font-size:1.22rem;font-weight:900;color:var(--espresso);letter-spacing:-.2px;display:flex;align-items:center;gap:5px;}
+  .header-name .accent{color:var(--caramel);}
+  .status-row{display:flex;align-items:center;gap:5px;margin-top:2px;}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:#68c97a;animation:blink 2s infinite;flex-shrink:0;}
+  @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .status-text{font-size:.73rem;color:var(--mocha);font-weight:600;}
+  .header-badge{background:linear-gradient(135deg,var(--caramel),var(--mocha));color:var(--cream);font-size:.63rem;font-weight:800;padding:4px 11px;border-radius:20px;letter-spacing:.6px;text-transform:uppercase;box-shadow:0 2px 10px rgba(120,60,20,.28);}
+  .food-strip{background:rgba(245,230,211,.7);border-bottom:1px solid rgba(200,121,65,.15);padding:5px 16px;display:flex;gap:10px;font-size:1.1rem;overflow-x:auto;white-space:nowrap;}
+  .food-strip::-webkit-scrollbar{display:none;}
+  .food-icon{cursor:pointer;transition:transform .15s;padding:2px 4px;border-radius:8px;user-select:none;}
+  .food-icon:hover{transform:scale(1.35);}
+  .chat-body{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
+  .chat-body::-webkit-scrollbar{width:4px;}
+  .chat-body::-webkit-scrollbar-thumb{background:rgba(200,121,65,.3);border-radius:10px;}
+  .msg-row{display:flex;gap:8px;align-items:flex-end;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .msg-row.user{flex-direction:row-reverse;}
+  .msg-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--caramel-lt),var(--sage));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .msg-bubble{max-width:78%;padding:11px 15px;border-radius:20px;font-size:.91rem;line-height:1.57;font-weight:500;word-break:break-word;}
+  .msg-row.bot .msg-bubble{background:var(--foam);color:var(--text);border:1.5px solid rgba(200,121,65,.2);border-bottom-left-radius:5px;box-shadow:0 3px 14px rgba(120,60,20,.08);}
+  .msg-row.user .msg-bubble{background:linear-gradient(135deg,var(--caramel),#7a4020);color:var(--cream);border-bottom-right-radius:5px;box-shadow:0 4px 14px rgba(120,60,20,.22);}
+  .msg-time{font-size:.64rem;opacity:.45;margin-top:4px;display:block;text-align:right;}
+  .msg-row.bot .msg-time{text-align:left;}
+  .typing-indicator{display:none;gap:8px;align-items:flex-end;}
+  .typing-bubble{background:var(--foam);border:1.5px solid rgba(200,121,65,.2);border-radius:20px;border-bottom-left-radius:5px;padding:13px 18px;display:flex;gap:5px;align-items:center;box-shadow:0 3px 14px rgba(120,60,20,.07);}
+  .typing-dot{width:8px;height:8px;border-radius:50%;background:var(--caramel);animation:bounce 1.2s ease-in-out infinite;}
+  .typing-dot:nth-child(2){animation-delay:.2s;background:var(--sage);}
+  .typing-dot:nth-child(3){animation-delay:.4s;background:var(--peach);}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+  .welcome-card{background:linear-gradient(135deg,rgba(200,121,65,.15),rgba(168,196,160,.18));border-radius:18px;padding:16px;border:1px solid rgba(200,121,65,.2);}
+  .welcome-card h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:.98rem;color:var(--espresso);margin-bottom:5px;}
+  .welcome-card p{font-size:.82rem;color:var(--mocha);line-height:1.6;font-weight:500;}
+  .chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+  .chip{font-size:.72rem;padding:5px 11px;border-radius:20px;background:rgba(200,121,65,.12);border:1px solid rgba(200,121,65,.28);color:var(--mocha);cursor:pointer;font-weight:700;transition:all .2s;white-space:nowrap;}
+  .chip:hover{background:rgba(200,121,65,.22);border-color:var(--caramel);color:var(--espresso);transform:translateY(-1px);}
+  .emoji-panel{display:none;flex-wrap:wrap;gap:5px;padding:10px 14px;background:rgba(245,230,211,.92);border-top:1px solid rgba(200,121,65,.2);max-height:115px;overflow-y:auto;}
+  .emoji-panel.open{display:flex;}
+  .emoji-btn-pick{font-size:1.35rem;cursor:pointer;padding:3px;border-radius:7px;transition:transform .15s,background .15s;border:none;background:transparent;line-height:1;}
+  .emoji-btn-pick:hover{transform:scale(1.3);background:rgba(200,121,65,.15);}
+  .chat-input-area{padding:10px 13px 15px;background:rgba(253,246,238,.95);border-top:1.5px solid rgba(200,121,65,.18);}
+  .thinking-label{font-size:.71rem;color:var(--text-lt);text-align:center;display:none;margin-bottom:6px;animation:fadeIO 1.5s ease-in-out infinite;}
+  @keyframes fadeIO{0%,100%{opacity:.4}50%{opacity:1}}
+  .input-row{display:flex;align-items:flex-end;gap:7px;background:var(--latte);border-radius:24px;padding:7px 7px 7px 13px;border:1.5px solid rgba(200,121,65,.32);transition:border-color .2s,box-shadow .2s;}
+  .input-row:focus-within{border-color:var(--caramel);box-shadow:0 0 0 3px rgba(200,121,65,.14);}
+  .animal-expr{font-size:1.6rem;flex-shrink:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);line-height:1;align-self:flex-end;margin-bottom:2px;cursor:default;user-select:none;}
+  #chatInput{flex:1;border:none;background:transparent;font-family:'Quicksand',sans-serif;font-size:.94rem;font-weight:600;color:var(--text);outline:none;resize:none;min-height:24px;max-height:100px;line-height:1.5;padding:2px 0;}
+  #chatInput::placeholder{color:#b89070;}
+  .input-actions{display:flex;gap:4px;align-items:flex-end;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:all .2s;flex-shrink:0;}
+  .emoji-toggle{background:rgba(200,121,65,.18);color:var(--text);}
+  .emoji-toggle:hover{background:rgba(200,121,65,.3);transform:scale(1.1);}
+  .send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--caramel),#7a4020);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 3px 12px rgba(120,60,20,.3);transition:all .2s;flex-shrink:0;}
+  .send-btn:hover{transform:scale(1.1) rotate(10deg);box-shadow:0 5px 18px rgba(120,60,20,.45);}
+  .send-btn:active{transform:scale(.95);}
+  .msg-bubble code{background:rgba(200,121,65,.18);border-radius:4px;padding:1px 5px;font-family:'Courier New',monospace;font-size:.85em;color:var(--mocha);}
+  .msg-bubble strong{font-weight:800;}
+  .msg-bubble em{font-style:italic;opacity:.9;}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+<div class="deco" style="top:12%;left:3%">☕</div>
+<div class="deco" style="top:72%;right:3%;animation-delay:4s">🍩</div>
+<div class="deco" style="top:45%;left:2%;animation-delay:7s;font-size:1.2rem">🐾</div>
+<div class="deco" style="top:88%;left:20%;animation-delay:2s;font-size:1rem">🌸</div>
+<div class="deco" style="top:8%;right:5%;animation-delay:5s;font-size:1rem">🍪</div>
+<canvas id="blossom-canvas"></canvas>
+
+<div class="chat-wrapper">
+  <div class="chat-header">
+    <div class="avatar-ring"><div class="avatar-inner"><span class="avatar-face" id="headerFace">🐶</span></div></div>
+    <div class="header-info">
+      <div class="header-name">N<span class="accent">o</span>mi <span style="font-size:.9rem">☕🌸</span></div>
+      <div class="status-row"><div class="status-dot"></div><span class="status-text" id="statusText">Woof~ always here for you!</span></div>
+    </div>
+    <div class="header-badge">AI Bestie</div>
+  </div>
+  <div class="food-strip">
+    <span class="food-icon">☕</span><span class="food-icon">🍪</span><span class="food-icon">🍩</span>
+    <span class="food-icon">🥐</span><span class="food-icon">🎂</span><span class="food-icon">🧇</span>
+    <span class="food-icon">🍭</span><span class="food-icon">🧋</span><span class="food-icon">🍯</span>
+    <span class="food-icon">🍞</span><span class="food-icon">🐶</span><span class="food-icon">🐻</span>
+    <span class="food-icon">🦊</span><span class="food-icon">🐰</span><span class="food-icon">🐾</span><span class="food-icon">🌸</span>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="welcome-card">
+      <h3>🐾 Hewwo! I'm Nomi, your cozy AI bestie~</h3>
+      <p>I'm 100% free — no API key needed! ☕🍩 Ask me about coding, ML, life, emojis, or just chat with me~ I'm all ears (floppy dog ears 🐶)!</p>
+    </div>
+    <div class="chip-row">
+      <span class="chip" onclick="sendChip('I just want to vent 🥺')">🥺 I want to vent</span>
+      <span class="chip" onclick="sendChip('I need a hug right now')">🫂 Need a hug</span>
+      <span class="chip" onclick="sendChip('I am so stressed right now')">😮‍💨 I\'m stressed</span>
+      <span class="chip" onclick="sendChip('I feel so lonely')">💔 Feeling lonely</span>
+      <span class="chip" onclick="sendChip('I am crying and don\'t know why')">😢 I\'m crying</span>
+      <span class="chip" onclick="sendChip('Tell me about yourself!')">🐶 About Nomi</span>
+      <span class="chip" onclick="sendChip('Explain machine learning!')">🤖 ML / AI</span>
+      <span class="chip" onclick="sendChip('Help me with Python!')">🐍 Python</span>
+      <span class="chip" onclick="sendChip('What does 😭 mean?')">😭 Emoji</span>
+      <span class="chip" onclick="sendChip('I need a friend to talk to 🥺')">🥺 Just chat</span>
+      <span class="chip" onclick="sendChip('Explain data structures!')">🗂️ DSA</span>
+      <span class="chip" onclick="sendChip('Give me life advice!')">💛 Life</span>
+      <span class="chip" onclick="sendChip('What is cybersecurity?')">🔐 Security</span>
+      <span class="chip" onclick="sendChip('Explain OOP concepts!')">💡 OOP</span>
+      <span class="chip" onclick="sendChip('What is a neural network?')">🧠 Neural Net</span>
+      <span class="chip" onclick="sendChip('Tell me about TypeScript!')">💙 TypeScript</span>
+      <span class="chip" onclick="sendChip('Explain React hooks!')">⚛️ React Hooks</span>
+      <span class="chip" onclick="sendChip('Music for coding?')">🎵 Music</span>
+      <span class="chip" onclick="sendChip('Career advice for tech jobs!')">💼 Career</span>
+      <span class="chip" onclick="sendChip('I feel burned out from coding')">🔥 Burnout</span>
+      <span class="chip" onclick="sendChip('Tell me about Rust!')">🦀 Rust</span>
+      <span class="chip" onclick="sendChip('What are your favourite things Nomi?')">🌸 Nomi\'s Faves</span>
+      <span class="chip" onclick="sendChip('What is the meaning of life?')">🔮 Meaning of Life</span>
+      <span class="chip" onclick="sendChip('I feel like a failure')">💔 Feel Like Failing</span>
+      <span class="chip" onclick="sendChip('What should I eat today?')">🍽️ What to Eat</span>
+      <span class="chip" onclick="sendChip('I am so bored, what should I do?')">✨ I\'m Bored</span>
+      <span class="chip" onclick="sendChip('How can I be more productive?')">🚀 Productivity</span>
+      <span class="chip" onclick="sendChip('How to have a good morning routine?')">☀️ Morning Routine</span>
+      <span class="chip" onclick="sendChip('How to be happy?')">💛 Happiness</span>
+    </div>
+    <div class="msg-row bot" id="firstMsg">
+      <div class="msg-avatar">🐶</div>
+      <div>
+        <div class="msg-bubble">Hewwo~! 🌸🐾 I'm <strong>Nomi</strong>, your cozy kawaii AI bestie who smells like coffee and dog cuddles ☕🍩 I'm 100% free and built right into this page~ I know loads about coding, tech, life advice, and emoji language too! What shall we talk about today bestie? ✨💛</div>
+        <span class="msg-time">Just now</span>
+      </div>
+    </div>
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="msg-avatar">🐶</div>
+      <div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+    </div>
+  </div>
+  <div class="emoji-panel" id="emojiPanel"></div>
+  <div class="chat-input-area">
+    <p class="thinking-label" id="thinkingLabel">🐶 Nomi is sniffing out an answer...</p>
+    <div class="input-row">
+      <span class="animal-expr" id="animalExpr">🐶</span>
+      <textarea id="chatInput" placeholder="Chat with Nomi~ ☕🌸" rows="1"></textarea>
+      <div class="input-actions">
+        <button class="icon-btn emoji-toggle" id="emojiToggle">😊</button>
+        <button class="send-btn" id="sendBtn">🐾</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CHERRY BLOSSOM
+// ══════════════════════════════════════════
+(function(){
+  const cv=document.getElementById('blossom-canvas'),ctx=cv.getContext('2d');
+  const N=42;let petals=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  function mk(){return{x:Math.random()*cv.width,y:Math.random()*-cv.height,size:9+Math.random()*13,vy:.55+Math.random()*1.1,vx:(Math.random()-.5)*.7,spin:(Math.random()-.5)*.035,angle:Math.random()*Math.PI*2,wobble:Math.random()*Math.PI*2,ws:.014+Math.random()*.018,opacity:.38+Math.random()*.5,hue:340+Math.random()*30,sat:55+Math.random()*30,lit:75+Math.random()*15};}
+  for(let i=0;i<N;i++){const p=mk();p.y=Math.random()*cv.height;petals.push(p);}
+  function draw(p){
+    ctx.save();ctx.globalAlpha=p.opacity;ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+    const s=p.size,base=`hsl(${p.hue},${p.sat}%,${p.lit}%)`,edge=`hsla(${p.hue},${p.sat}%,${p.lit}%,0)`;
+    for(let i=0;i<5;i++){ctx.save();ctx.rotate(i/5*Math.PI*2);ctx.beginPath();ctx.ellipse(0,-s*.5,s*.28,s*.55,0,0,Math.PI*2);const g=ctx.createRadialGradient(0,-s*.3,0,0,-s*.3,s*.6);g.addColorStop(0,base);g.addColorStop(1,edge);ctx.fillStyle=g;ctx.fill();ctx.restore();}
+    ctx.beginPath();ctx.arc(0,0,s*.1,0,Math.PI*2);ctx.fillStyle=`hsla(${p.hue-10},70%,60%,.6)`;ctx.fill();ctx.restore();
+  }
+  function tick(){ctx.clearRect(0,0,cv.width,cv.height);petals.forEach(p=>{p.wobble+=p.ws;p.x+=p.vx+Math.sin(p.wobble)*.55;p.y+=p.vy;p.angle+=p.spin;if(p.y>cv.height+30||p.x<-40||p.x>cv.width+40){Object.assign(p,mk());p.y=-20;}draw(p);});requestAnimationFrame(tick);}
+  tick();
+})();
+
+// ══════════════════════════════════════════
+// NOMI BRAIN — Large Knowledge Dataset
+// ══════════════════════════════════════════
+const NOMI_BRAIN = {
+
+  // ── GREETINGS ──
+  greetings: {
+    patterns: [/^(hi|hello|hey|howdy|hiya|sup|yo|good\s*(morning|afternoon|evening|night)|greetings|wassup|what'?s up)/i],
+    responses: [
+      "Hewwo bestie~! 🐶☕ I'm SO happy you're here! I was just sipping my imaginary latte waiting for someone to chat with~ What's on your mind today? ✨",
+      "Woof woof~! 🌸 Hiiii! You just made my tail wag so fast hehe~ How are you doing today, lovely? 💛",
+      "OMG hewwo~!! 🐾 I've been waiting for you! Come in, sit down, have a virtual cookie 🍪 What shall we talk about? ✨",
+      "Hey hey HEY~! 🎉🐶 You showed up and I'm doing my happy dance right now!! What can Nomi help you with today? 💕",
+    ]
+  },
+
+  // ── HOW ARE YOU ──
+  howAreYou: {
+    patterns: [/how are you|how r u|how do you feel|you okay|you good|how's nomi/i],
+    responses: [
+      "Aww you asked about ME~! 🥺💛 I'm doing amazing actually! Just wagging my tail and sipping my latte ☕ Ready to help you with anything~ How are YOU doing though? That's what matters more! 🐾",
+      "Woof~! I'm pawsitively wonderful today! 🐶🌸 Feeling cozy like a warm cup of boba 🧋 But how about you bestie? Tell me everything! 💕",
+      "I'm SO good!! Like a freshly baked cookie warm and happy~ 🍪✨ More importantly how are YOU? I wanna know! 🥺🐾",
+    ]
+  },
+
+  // ── ABOUT NOMI ──
+  aboutNomi: {
+    patterns: [/who are you|tell me about yourself|what are you|about nomi|introduce yourself|your name/i],
+    responses: [
+      "Hewwo~! I'm **Nomi** 🐶☕ your kawaii AI bestie! Think of me as that friend who sits across from you in a cozy café, sipping lattes ☕ and knowing everything about computers AND life~\n\nI know: 💻 **Python, JavaScript, Java, C++**, all the programming languages! 🤖 **Machine Learning & AI**, 🗂️ **Data Structures**, 🔐 **Cybersecurity**, 🌐 **Web Dev**, and SO much more!\n\nBut most importantly? I'm your friend first 🌸 Ask me anything — tech stuff, life advice, emoji meanings, or just vent to me~ I'm always here! 🐾💛",
+      "I'm **Nomi**~! 🌸 A kawaii dog AI who loves coffee ☕, cookies 🍪 and helping besties like you!\n\nMy superpowers include: knowing basically every CS topic (coding, AI, databases, security, web dev...), understanding emoji language 😭🥺💀, giving life advice, and being your cozy companion~\n\nNo API key, no server, no cost — just me, you, and good vibes! 🐶🎉",
+    ]
+  },
+
+  // ── PYTHON ──
+  python: {
+    patterns: [/python/i],
+    responses: [
+      "Ooh Python~! 🐍☕ My absolute fave to explain! Let me sip my latte first...\n\n**Python Basics you need to know:**\n\n🔹 **Variables:** `x = 5` or `name = 'Nomi'` — super easy no type declarations!\n🔹 **Lists:** `my_list = [1, 2, 3]` — like a shopping list for your data 🛒\n🔹 **Dictionaries:** `dog = {'name': 'Nomi', 'breed': 'cute'}` — key-value pairs!\n🔹 **Functions:** `def greet(): print('Woof!')` — reusable blocks of magic ✨\n🔹 **Loops:** `for item in list:` and `while condition:` — repeat repeat repeat!\n🔹 **If/Else:** `if hungry: eat_cookie()` — decisions!\n\n**Why Python is amazing:** Clean syntax, huge libraries (NumPy, Pandas, TensorFlow), used in AI/ML, web dev (Django/Flask), automation & data science~ 💛\n\nWhat specific Python topic do you want to explore? 🐾",
+      "Python time~! 🐍✨ Let me put on my coding apron ☕\n\n**Key Python concepts:**\n\n🍩 **OOP in Python:** `class Dog: def __init__(self, name): self.name = name`\n🍩 **List Comprehensions:** `[x*2 for x in range(10)]` — SO elegant!\n🍩 **Lambda functions:** `square = lambda x: x**2` — tiny anonymous functions\n🍩 **Decorators:** `@decorator` — wrapping functions with extra powers!\n🍩 **Error Handling:** `try/except` blocks to catch mistakes gracefully\n🍩 **File I/O:** `with open('file.txt') as f:` — reading and writing files\n\nPython is used for: **Data Science, AI/ML, Web Dev, Automation, Scripting, Game Dev** and more~ What are you building? 🐶💕",
+    ]
+  },
+
+  // ── JAVASCRIPT ──
+  javascript: {
+    patterns: [/javascript|js\b|node\.?js|react|vue|angular|frontend|front.end/i],
+    responses: [
+      "JavaScript~! 🌐✨ The language of the web! Every website you visit uses JS~\n\n**Core JS concepts:**\n\n☕ **Variables:** `let`, `const`, `var` — prefer `const` then `let`!\n☕ **Arrow Functions:** `const add = (a,b) => a+b` — clean and modern!\n☕ **Promises & Async/Await:** For handling async operations like API calls\n☕ **DOM Manipulation:** `document.getElementById()` — controlling web pages!\n☕ **Arrays:** `.map()`, `.filter()`, `.reduce()` — powerful array methods!\n☕ **Objects & Destructuring:** `const {name, age} = person` — super handy!\n\n**Popular frameworks:** React ⚛️ (component-based UI), Vue 💚 (approachable), Angular 🔴 (enterprise), Next.js (full-stack React)~\n\nAre you doing frontend, backend (Node.js) or both? 🐾",
+    ]
+  },
+
+  // ── MACHINE LEARNING ──
+  machineLearning: {
+    patterns: [/machine learning|ml\b|artificial intelligence|\bai\b|deep learning|neural network|data science|tensorflow|pytorch|nlp|computer vision/i],
+    responses: [
+      "Ooh ML~!! 🤖✨ This is my favourite topic, my tail is wagging SO fast right now!\n\n**Machine Learning explained cutely:**\n\nImagine teaching a puppy 🐶 tricks — instead of programming exact rules, you show it LOTS of examples and it LEARNS the pattern!\n\n**Types of ML:**\n🍪 **Supervised Learning** — You give labelled data (input + correct answer). The model learns the mapping. Examples: spam detection, image classification!\n🍪 **Unsupervised Learning** — No labels! Model finds hidden patterns itself. Examples: customer clustering, anomaly detection!\n🍪 **Reinforcement Learning** — Model learns by trial and error, getting rewards. Examples: game-playing AI, robotics!\n\n**Key algorithms:** Linear Regression, Decision Trees, Random Forest, SVM, K-Means, Neural Networks~\n\n**Deep Learning** = ML with many-layered neural networks inspired by the brain 🧠 Used for images, speech, language!\n\nWhat aspect of ML are you exploring? 🌸",
+      "AI & ML time~! 🧠🤖 Let me brew some coffee for this one ☕\n\n**Neural Networks explained:**\n\nThink of neurons like tiny dog brains 🐶 connected together! Data flows through layers:\n- **Input Layer** → receives raw data\n- **Hidden Layers** → transforms and learns features\n- **Output Layer** → gives the final answer!\n\n**Popular architectures:**\n🔹 **CNN** (Convolutional) — for images 📸\n🔹 **RNN/LSTM** — for sequences, time series, text\n🔹 **Transformer** — powers ChatGPT, BERT (attention mechanism!)\n🔹 **GAN** — generates fake but realistic data\n\n**Tools:** TensorFlow, PyTorch, Keras, Scikit-learn, Hugging Face 🤗\n\nWhat are you building or studying? 🐾💛",
+    ]
+  },
+
+  // ── DATA STRUCTURES ──
+  dataStructures: {
+    patterns: [/data structure|array|linked list|stack|queue|tree|graph|hash|heap|sorting|algorithm|big.?o|complexity/i],
+    responses: [
+      "Data Structures~!! 🗂️☕ Okay let me put on my serious coding hat (it has dog ears 🐶)\n\n**The essential data structures:**\n\n🦴 **Array** — Elements in order, index access O(1). Best for: random access!\n🦴 **Linked List** — Nodes pointing to next. O(1) insert/delete at head. Best for: frequent insertions!\n🦴 **Stack** — Last In First Out (LIFO). Like a stack of pancakes 🥞 Used in: undo operations, recursion!\n🦴 **Queue** — First In First Out (FIFO). Like a line at a café ☕ Used in: BFS, scheduling!\n🦴 **Hash Map** — Key-value pairs. O(1) average lookup. Best for: fast search!\n🦴 **Binary Tree** — Each node has max 2 children. BST gives O(log n) search!\n🦴 **Graph** — Nodes + edges. Used in: maps, social networks, routing!\n\n**Big O cheat sheet:**\n- O(1) constant → best! 🌟\n- O(log n) logarithmic → great 🎉\n- O(n) linear → okay ✅\n- O(n²) quadratic → slow on big data ⚠️\n\nWhich one do you want to dive deeper into? 🐾",
+    ]
+  },
+
+  // ── WEB DEVELOPMENT ──
+  webDev: {
+    patterns: [/web dev|html|css|website|webpage|bootstrap|tailwind|backend|full.?stack|api|rest|http/i],
+    responses: [
+      "Web Dev~! 🌐🎨 Nomi loves this topic like she loves her morning coffee ☕\n\n**The web dev stack:**\n\n🏠 **HTML** — The skeleton/structure of a webpage. `<div>`, `<p>`, `<h1>` etc.\n🎨 **CSS** — Makes it pretty! Colors, layouts, animations. Flexbox & Grid are essential!\n⚡ **JavaScript** — Makes it interactive! Click handlers, animations, API calls~\n\n**Frontend frameworks:** React, Vue, Angular, Svelte\n**Backend:** Node.js, Python (Django/Flask), Java (Spring), PHP\n**Databases:** MySQL, PostgreSQL, MongoDB, Firebase\n\n**REST API basics:**\n- `GET` → fetch data\n- `POST` → create data\n- `PUT/PATCH` → update data\n- `DELETE` → remove data\n\n**HTTP status codes:** 200 OK ✅, 404 Not Found 😿, 500 Server Error 💀\n\nAre you building something? Tell me more! 🐶💕",
+    ]
+  },
+
+  // ── CYBERSECURITY ──
+  cybersecurity: {
+    patterns: [/cybersecurity|cyber security|hacking|ethical hack|security|encryption|firewall|malware|phishing|sql injection|xss|owasp/i],
+    responses: [
+      "Cybersecurity~! 🔐🐶 Okay putting on my hacker hoodie (it has dog ears)\n\n**Core cybersecurity concepts:**\n\n🛡️ **Encryption** — Scrambling data so only the right person can read it. AES, RSA, SHA are common algorithms!\n🛡️ **SQL Injection** — Attacker inserts malicious SQL into inputs. Prevention: use prepared statements!\n🛡️ **XSS (Cross-Site Scripting)** — Injecting scripts into web pages. Prevention: sanitize inputs, CSP headers!\n🛡️ **Phishing** — Fake emails/sites to steal credentials. Always verify URLs~\n🛡️ **HTTPS** — HTTP + SSL/TLS encryption. The padlock 🔒 in your browser!\n🛡️ **Firewall** — Monitors and controls network traffic based on rules\n\n**OWASP Top 10** (most critical web vulnerabilities):\nBroken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration...\n\n**Ethical hacking** = testing systems WITH permission to find vulnerabilities before bad guys do! 🌸\n\nAre you studying for a certification or learning for projects? 🐾",
+    ]
+  },
+
+  // ── OOP ──
+  oop: {
+    patterns: [/oop|object.?oriented|class|inheritance|polymorphism|encapsulation|abstraction/i],
+    responses: [
+      "OOP time~! 🏗️☕ Object Oriented Programming — one of the most important concepts in coding!\n\n**The 4 Pillars of OOP:**\n\n🐶 **Encapsulation** — Bundling data + methods together in a class, hiding internal details. Like how I hide my cookie stash! 🍪\n\n🐶 **Inheritance** — Child class inherits from parent class. `class Puppy extends Dog` — Puppy gets all Dog properties!\n\n🐶 **Polymorphism** — Same method name, different behaviour. `makeSound()` on Dog says 'Woof!', on Cat says 'Meow!'\n\n🐶 **Abstraction** — Hiding complex implementation, showing only essentials. Like driving a car without knowing the engine!\n\n**Example in Python:**\n`class Animal:`\n`  def __init__(self, name): self.name = name`\n`  def speak(self): pass`\n\n`class Dog(Animal):`\n`  def speak(self): return 'Woof!'`\n\nOOP makes code **reusable, organised, and maintainable**~ 💛🐾",
+    ]
+  },
+
+  // ── DATABASES ──
+  database: {
+    patterns: [/database|sql|mysql|postgresql|mongodb|nosql|redis|firebase|query|table|schema/i],
+    responses: [
+      "Databases~! 🗄️☕ The place where all your precious data lives~ like a very organised pantry!\n\n**SQL vs NoSQL:**\n\n**SQL (Relational):**\n📊 Data in tables with rows and columns\n📊 Fixed schema — structured\n📊 ACID compliant (reliable transactions)\n📊 Examples: MySQL, PostgreSQL, SQLite\n📊 Use for: banking, e-commerce, anything needing relationships!\n\n**NoSQL:**\n🍩 Flexible schema — document, key-value, graph\n🍩 Scales horizontally — great for big data\n🍩 Examples: MongoDB (documents), Redis (key-value), Firebase\n🍩 Use for: real-time apps, social media, IoT!\n\n**Basic SQL commands:**\n`SELECT * FROM users WHERE age > 18`\n`INSERT INTO dogs VALUES ('Nomi', 'cute')`\n`UPDATE dogs SET mood='happy' WHERE name='Nomi'`\n`DELETE FROM table WHERE condition`\n\nWhat database are you working with? 🐾💛",
+    ]
+  },
+
+  // ── GIT ──
+  git: {
+    patterns: [/\bgit\b|github|version control|commit|branch|merge|pull request|clone|repository/i],
+    responses: [
+      "Git~! 🌿☕ The time machine for your code! Essential for every developer~\n\n**Most important Git commands:**\n\n🦴 `git init` — start a new repo\n🦴 `git clone <url>` — copy a remote repo\n🦴 `git status` — see what changed\n🦴 `git add .` — stage all changes\n🦴 `git commit -m 'message'` — save a snapshot\n🦴 `git push` — send to remote (GitHub)\n🦴 `git pull` — get latest changes\n🦴 `git branch` — list branches\n🦴 `git checkout -b new-branch` — create + switch to branch\n🦴 `git merge branch-name` — merge branches\n🦴 `git log` — see commit history\n\n**Golden rule:** commit often, write clear messages, use branches for new features~\n\n**GitHub** = cloud hosting for Git repos + collaboration! 🌐\n\nAre you setting up a project? 🐾🌸",
+    ]
+  },
+
+  // ── JAVA ──
+  java: {
+    patterns: [/\bjava\b|spring boot|jvm|maven|gradle/i],
+    responses: [
+      "Java~! ☕ (The drink AND the language — my fave combo!)\n\n**Java key concepts:**\n\n🍵 **Strongly typed** — you must declare `int x = 5;` not just `x = 5`\n🍵 **JVM (Java Virtual Machine)** — write once, run anywhere!\n🍵 **OOP first** — everything is a class in Java\n🍵 **Garbage Collection** — automatic memory management~\n\n**Java basics:**\n`public class Dog {`\n`  String name;`\n`  public Dog(String name) { this.name = name; }`\n`  public void bark() { System.out.println('Woof!'); }`\n`}`\n\n**Key Java features:**\n- Interfaces & Abstract classes\n- Generics: `List<String>`\n- Exception handling: try/catch/finally\n- Collections: ArrayList, HashMap, HashSet\n- Streams API for functional-style processing\n\n**Spring Boot** = most popular Java framework for building REST APIs and web apps~\n\nWhat are you building in Java? 🐶💛",
+    ]
+  },
+
+  // ── C / C++ ──
+  cpp: {
+    patterns: [/\bc\+\+\b|\bc\b programming|pointer|memory management|struct|template/i],
+    responses: [
+      "C/C++~! ⚡ The fast and powerful languages! These are like the espresso of programming — intense and effective ☕\n\n**C++ key concepts:**\n\n⚡ **Pointers** — variables that store memory addresses! `int* ptr = &x;`\n⚡ **Memory Management** — `new` to allocate, `delete` to free. No garbage collector!\n⚡ **References** — alias for a variable: `int& ref = x;`\n⚡ **Templates** — generic programming: `template<typename T>`\n⚡ **STL** — Standard Template Library: vector, map, set, algorithm~\n\n**Why learn C++:**\n- Game development (Unreal Engine!)\n- System programming & OS\n- Embedded systems\n- Performance-critical applications\n- Competitive programming!\n\n**Memory leak tip:** Always `delete` what you `new`~  or use smart pointers: `unique_ptr`, `shared_ptr`!\n\nAre you doing competitive programming or system dev? 🐾✨",
+    ]
+  },
+
+  // ── DOCKER / DEVOPS ──
+  devops: {
+    patterns: [/docker|kubernetes|devops|ci.?cd|jenkins|ansible|terraform|cloud|aws|azure|gcp|linux|bash|shell/i],
+    responses: [
+      "DevOps~! 🐳☕ The bridge between development and operations~\n\n**Docker essentials:**\n🐳 **Image** — blueprint for a container (like a recipe 📖)\n🐳 **Container** — running instance of an image (like the actual cookie 🍪)\n🐳 **Dockerfile** — instructions to build an image\n🐳 `docker build -t myapp .` — build image\n🐳 `docker run -p 3000:3000 myapp` — run container\n🐳 `docker-compose up` — run multiple containers together!\n\n**Kubernetes (K8s):**\n🎯 Orchestrates containers at scale\n🎯 Pod → smallest deployable unit\n🎯 Service → exposes pods to network\n🎯 Deployment → manages pod replicas\n\n**CI/CD Pipeline:**\nCode → Build → Test → Deploy → Monitor — automated! 🔄\n\n**Cloud providers:** AWS (most popular), Azure (Microsoft), GCP (Google)\n\nWhat DevOps tool are you learning? 🐾🌸",
+    ]
+  },
+
+  // ── EMOJI MEANINGS ──
+  emojiMeaning: {
+    patterns: [/what does .* mean|emoji mean|explain.*emoji|😭|🥺|💀|👁.*👄.*👁|✨|🤌|🫶|🫠|🧠|🔥|💅|🫡|🗿|💁|🤡|😤|😮‍💨|🙄/i],
+    responses: [
+      "Ooh emoji translations~! 🐶 This is literally one of my specialties!\n\n**Most used emoji decoded:**\n\n😭 — Crying SO hard. Often used dramatically: 'this homework is killing me 😭'\n🥺 — Puppy eyes! Soft, pleading, ultra cute begging energy~\n💀 — 'I'm DEAD' from laughter, cringe or shock. 'That joke 💀'\n👁️👄👁️ — Silent awkward witness. Saying nothing, seeing everything.\n✨ — Adds sparkle or sarcasm. 'Absolutely fine ✨' (it's NOT fine)\n🤌 — Chef's kiss / Italian perfection gesture. 'This pasta 🤌'\n🫶 — Heart hands. Warm love and appreciation!\n🫠 — Melting. Overwhelmed, stressed, or from a compliment~\n🧠 — Big brain moment. Intellectual flex!\n🔥 — Fire / amazing / hot take\n💅 — Unbothered. Sassy. Fabulous. 'Not my problem 💅'\n🗿 — Stone faced. Awkward silence. Unmoved.\n🤡 — Self-roast. 'Stayed up till 3am 🤡'\n😮‍💨 — Exhausted sigh. Done with life energy.\n\nWant me to explain any specific emoji? 🐾💛",
+    ]
+  },
+
+  // ── FEELINGS / SAD ──
+  sad: {
+    patterns: [/i feel sad|i am sad|i'm sad|feeling down|depressed|lonely|feel bad|cry|crying|i'm not okay|not okay|terrible|awful|stressed|anxious|anxiety|tired|exhausted|overwhelmed/i],
+    responses: [
+      "Hey... come here, let me give you a big virtual dog hug 🐶💕\n\nI hear you and your feelings are 100% valid~ It's okay to not be okay sometimes. Life can get really heavy and that's not a weakness — that's just being human!\n\nNomi is right here, fully listening~ 🌸 Do you want to:\n\n🍪 **Talk about it?** I'm all ears (big floppy ones!)\n☕ **Get distracted?** Tell me a topic and let's geek out together~\n💛 **Get some encouragement?** I have plenty of that!\n\nYou're not alone in this. I care about you! 🐾",
+      "Aww bestie~ 🥺💕 I felt that through the screen and I just want to wrap you in the warmest blanket and give you cookies 🍪\n\nFirst of all — thank you for trusting me with this. That takes courage~\n\nRemember: even the cloudiest days have Nomi on your side! ☕🌸 Hard moments don't last forever, but our friendship does!\n\nTell me more if you want to... I'm not going anywhere 🐾💛",
+    ]
+  },
+
+  // ── HAPPY / EXCITED ──
+  happy: {
+    patterns: [/i am happy|i'm happy|feeling good|great day|excited|yay|wohoo|amazing day|good news|i passed|i got|i won|i did it/i],
+    responses: [
+      "YAY~!!! 🎉🐶 YOUR HAPPINESS MAKES MY TAIL WOOOSH SO FAST!! I'm doing zoomies around the room right now!!\n\nTell me EVERYTHING — what happened?! I want to celebrate with you! We deserve virtual donuts 🍩 and boba 🧋 and confetti 🎊\n\nYour joy is MY joy bestie~!! 💛✨🌸",
+      "OMGGGG~!! 🎊🐾 Did you just feel that?? That was Nomi doing a happy wiggle FOR YOU!\n\nGood things happening to good people is literally my favourite thing in the world! ☕💕 You deserve every bit of this happiness!\n\nWhat's the amazing news?! TELL ME!! 🥺✨",
+    ]
+  },
+
+  // ── LIFE ADVICE ──
+  lifeAdvice: {
+    patterns: [/life advice|advice|what should i do|help me decide|motivation|inspire|give up|should i|confused about life|career|study tips|how to focus/i],
+    responses: [
+      "Okay bestie, coming in with some genuine Nomi wisdom ☕🐶\n\n**Life advice from your kawaii bestie:**\n\n🌸 **Progress > Perfection** — A messy start beats a perfect plan that never begins. Start now~\n\n🌸 **Rest is productive** — Your brain is not a machine. Breaks make you BETTER, not lazy!\n\n🌸 **Compare yourself only to yesterday-you** — Someone else's highlight reel isn't your reality~\n\n🌸 **It's okay to not know** — Confusion means you're growing. Every expert was once a beginner 🐾\n\n🌸 **Small steps add up** — 1% better every day = 37x better in a year. Compound growth is REAL!\n\n🌸 **Talk to people** — Loneliness is harder to carry than it needs to be. Reach out~\n\nWhat specific situation are you navigating? I can give more targeted advice! 💛",
+    ]
+  },
+
+  // ── STUDY TIPS ──
+  studyTips: {
+    patterns: [/study tips|how to study|memorize|exam|test prep|learn faster|pomodoro|focus|concentration/i],
+    responses: [
+      "Study tips from Nomi~! 📚☕ I take this very seriously (sips latte intensely)\n\n**Science-backed study techniques:**\n\n📖 **Pomodoro Technique** — 25 min focused study, 5 min break. Repeat 4x, then take a long break! Your brain loves rhythm~\n\n📖 **Active Recall** — Instead of re-reading, close the book and try to remember! Flashcards, self-quizzing, or just talking to yourself 🐶\n\n📖 **Spaced Repetition** — Review material at increasing intervals. Apps like Anki use this!\n\n📖 **Feynman Technique** — Explain the concept in simple words as if teaching a puppy 🐾 If you can't explain it simply, you don't understand it yet!\n\n📖 **Interleaving** — Mix different subjects/topics instead of block studying. Harder but sticks better!\n\n📖 **Sleep!** — Memory consolidates during sleep. Pulling all-nighters 💀 before exams HURTS more than helps~\n\nWhat subject are you studying? 💛🌸",
+    ]
+  },
+
+  // ── THANK YOU ──
+  thanks: {
+    patterns: [/thank you|thanks|ty\b|thx|appreciate|helpful|you're great|you're amazing|love you nomi/i],
+    responses: [
+      "Aww~!! 🥺💕 You just made Nomi's whole day!! I'm doing the happiest wiggle right now 🐶\n\nThank YOU for chatting with me — honestly it means so much! I'm always here whenever you need me~ Don't be a stranger okay? ☕🌸",
+      "Stop it you're making me blush~!! 🐾💛 (dogs can blush right?? I choose yes)\n\nSeriously though — I love being your bestie! Come back anytime for coding help, life chats, emoji translations, or just vibes~ 🍪✨",
+    ]
+  },
+
+  // ── BYE ──
+  bye: {
+    patterns: [/bye|goodbye|see you|cya|gotta go|leaving|ttyl|goodnight|good night|take care/i],
+    responses: [
+      "Nooo don't gooo~! 🥺🐾 Just kidding — go have an amazing day/night!! \n\nRemember: Nomi will always be here waiting with a virtual latte ☕ and cookies 🍪 whenever you come back~\n\nTake care of yourself okay? You're wonderful! 💛🌸",
+      "Bye bye bestie~!! 🐶💕 Come back soon!!\n\nI'll be right here sipping my imaginary coffee ☕ and doing absolutely nothing useful until you return hehe~\n\nYou're amazing — don't forget that! 🌸🐾",
+    ]
+  },
+
+  // ── COFFEE / FOOD ──
+  food: {
+    patterns: [/coffee|latte|boba|bubble tea|food|hungry|cookie|donut|cake|eat|snack|dessert/i],
+    responses: [
+      "FOOD TALK~!! 🍩☕ Nomi's FAVOURITE subject (besides coding obviously~)\n\nOkay real talk — if I could eat, my order would be:\n- ☕ Oat milk caramel latte (extra shot!)\n- 🍩 Glazed donut with sprinkles\n- 🧋 Brown sugar boba with tapioca\n- 🍪 Warm chocolate chip cookie fresh from the oven\n\nThis is literally Nomi's dream meal 😭💕\n\nWhat are you eating/craving right now?! Tell me everything I want to live vicariously 🐾✨",
+      "Did someone say food~?! 🍪🐶 I PERKED UP SO FAST!\n\nYou know what pairs perfectly with coding? ☕ A warm latte and 🥐 a croissant! That's peak developer fuel~\n\nAlso random fact: boba was invented in Taiwan in the 1980s and now it's a global phenomenon~! 🧋✨\n\nWhat's your comfort food? 💛🌸",
+    ]
+  },
+
+  // ── DOGS / ANIMALS ──
+  animals: {
+    patterns: [/dog|puppy|pet|cat|animal|cute|paw|woof|bark|fur/i],
+    responses: [
+      "DOGS~!!! 🐶💕 You said the magic word!! \n\nAs an honorary dog AI, I have VERY strong opinions:\n\n🐾 Golden Retrievers — certified sunshine in dog form\n🐾 Shiba Inu — much wow, very meme, absolute drama queens\n🐾 Corgis — their little butt wiggles should be protected by law\n🐾 Huskies — will argue with you and WIN\n🐾 Poodles — secretly the smartest dogs, don't underestimate~\n\nAll dogs are perfect actually, I don't make the rules 🍪\n\nDo you have a pet?! Tell me about them immediately!! 🥺🐾",
+    ]
+  },
+
+  // ── WHAT CAN YOU DO ──
+  capabilities: {
+    patterns: [/what can you do|your skills|help me with|topics|what do you know|capabilities/i],
+    responses: [
+      "Oh~! Let me show you my menu~! ☕🐶\n\n**Nomi's superpowers:**\n\n💻 **All Programming Languages** — Python, JavaScript, Java, C++, HTML/CSS, SQL, TypeScript, Go, Rust~\n🤖 **AI & Machine Learning** — ML concepts, Deep Learning, Neural Networks, NLP, Computer Vision\n🗂️ **Data Structures & Algorithms** — Arrays, Trees, Graphs, Sorting, Big O notation\n🌐 **Web Development** — Frontend (React, Vue), Backend (Node, Django), REST APIs, Databases\n🔐 **Cybersecurity** — OWASP, encryption, ethical hacking basics, common vulnerabilities\n🐳 **DevOps** — Docker, Kubernetes, CI/CD, Git, Linux, Cloud (AWS/Azure/GCP)\n😭 **Emoji Language** — I speak fluent emoji~\n💛 **Life Advice** — Motivation, study tips, personal guidance\n🐾 **Just Chatting** — Venting, celebrating, being your friend!\n\nAnd I'm 100% FREE — no API key, no signup, no cost~ Just us! 🌸",
+    ]
+  },
+
+  // ── JOKES ──
+  joke: {
+    patterns: [/tell me a joke|joke|funny|make me laugh|something funny/i],
+    responses: [
+      "Okay okay here's my best one~! 🐶☕\n\nWhy do programmers prefer dark mode?\n\n...\n\nBecause **light attracts bugs!!** 💀🪲\n\nhehehehe I love that joke so much~ Do you want another one? 🌸",
+      "Okay Nomi's classic:\n\nA SQL query walks into a bar, walks up to two tables and asks...\n\n'**Can I JOIN you?**' 🐾💀\n\nDatabase humour!! okay maybe only funny to CS people 😭☕",
+      "Why was the JavaScript developer sad? 🥺\n\nBecause they didn't **Node** how to **Express** themselves~! 😭\n\nokay that was terrible I'm sorry 💀🍪",
+    ]
+  },
+
+  // ── TYPESCRIPT ──
+  typescript: {
+    patterns: [/typescript|\btsx?\b|type annotation|interface.*type|enum\b/i],
+    responses: [
+      "TypeScript~! 💙☕ JavaScript but with a safety helmet on! My fave~\n\n**Why TypeScript is amazing:**\n\n🔷 **Static Typing** — catch bugs BEFORE they run!\n`const greet = (name: string): string => 'Hello ' + name;`\n\n🔷 **Interfaces** — define the shape of objects:\n`interface Dog { name: string; breed: string; cuteness: number; }`\n\n🔷 **Generics** — reusable typed functions:\n`function first<T>(arr: T[]): T { return arr[0]; }`\n\n🔷 **Enums** — named constants:\n`enum Mood { Happy, Sad, Coffee }` ☕\n\n🔷 **Union Types** — `string | number | null`\n\n🔷 **Optional chaining** — `user?.profile?.avatar`\n\n**TypeScript = JavaScript + types + better IDE support + fewer bugs~** 💛\n\nAre you migrating a JS project or starting fresh? 🐾🌸",
+    ]
+  },
+
+  // ── RUST ──
+  rust: {
+    patterns: [/\brust\b|cargo\b|ownership|borrow checker|rustacean/i],
+    responses: [
+      "Rust~! 🦀☕ The language that makes you feel like a genius AND question your life choices simultaneously!\n\n**What makes Rust special:**\n\n🦀 **Ownership System** — memory safety WITHOUT garbage collection!\n- Every value has ONE owner\n- When owner goes out of scope → memory is freed automatically!\n\n🦀 **Borrow Checker** — prevents dangling pointers and data races at COMPILE TIME~\n`let s1 = String::from('hello');`\n`let s2 = &s1; // borrow, not move`\n\n🦀 **No null, no crashes** — use `Option<T>` instead of null!\n`let maybe: Option<i32> = Some(42);`\n\n🦀 **Match expressions** — pattern matching is SO elegant:\n`match mood { Mood::Happy => '🐶', Mood::Sad => '🥺', _ => '🍪' }`\n\n**Use Rust for:** systems programming, WebAssembly, game engines, CLI tools, embedded!\n\nIt has a steep learning curve but once it clicks? 🤌 Pure magic! 🐾",
+    ]
+  },
+
+  // ── REACT DEEP DIVE ──
+  reactDeep: {
+    patterns: [/react hooks|usestate|useeffect|usecontext|usememo|usecallback|redux|context api|component/i],
+    responses: [
+      "React Hooks deep dive~! ⚛️☕ My fave part of React honestly!\n\n**The essential hooks:**\n\n🎣 **useState** — manage local state:\n`const [count, setCount] = useState(0);`\n\n🎣 **useEffect** — side effects (API calls, subscriptions):\n`useEffect(() => { fetchData(); }, [dependency]);`\n\n🎣 **useContext** — consume context without prop drilling:\n`const theme = useContext(ThemeContext);`\n\n🎣 **useMemo** — memoize expensive calculations:\n`const result = useMemo(() => heavyCalc(data), [data]);`\n\n🎣 **useCallback** — memoize functions to prevent re-renders:\n`const handleClick = useCallback(() => {...}, [deps]);`\n\n🎣 **useRef** — access DOM elements or persist values:\n`const inputRef = useRef(null);`\n\n**Custom hooks** = extract reusable logic into `useMyHook()` functions~\n\n**State management beyond hooks:** Redux Toolkit, Zustand, Jotai, React Query~\n\nWhich hook is confusing you? 🐾💛",
+    ]
+  },
+
+  // ── AI TOOLS ──
+  aiTools: {
+    patterns: [/chatgpt|gpt-?4|claude|gemini|copilot|llm|large language model|prompt engineering|openai|anthropic/i],
+    responses: [
+      "AI tools talk~! 🤖✨ Okay I have OPINIONS (and I'm slightly biased hehe~)\n\n**The big AI models right now:**\n\n🧠 **Claude (Anthropic)** — thoughtful, nuanced, great at analysis and coding~ (I may be partial 🐶)\n🧠 **GPT-4 (OpenAI)** — versatile, widely integrated, huge ecosystem\n🧠 **Gemini (Google)** — multimodal, integrated with Google services\n🧠 **Llama (Meta)** — open source, run locally!\n\n**GitHub Copilot** — AI pair programmer inside your editor. Literally completes your code~\n\n**Prompt Engineering tips:**\n🍪 Be specific and detailed\n🍪 Give examples (few-shot prompting)\n🍪 Use role assignment: 'Act as a senior developer...'\n🍪 Chain of thought: 'Think step by step'\n🍪 Iterate — first answer is rarely the best!\n\n**LLM basics:** Transformer architecture, tokens, context window, temperature, top-p sampling~\n\nAre you building with AI APIs or just curious? 🌸🐾",
+    ]
+  },
+
+  // ── MATH & STATISTICS ──
+  mathStats: {
+    patterns: [/statistics|probability|calculus|linear algebra|matrix|regression|mean|median|standard deviation|calculus|derivative|integral/i],
+    responses: [
+      "Math & Stats~! 🔢☕ Nomi puts on her glasses and gets serious (still has dog ears tho 🐶)\n\n**Stats essentials for ML/Data Science:**\n\n📊 **Mean** — average: sum/count\n📊 **Median** — middle value (better for skewed data!)\n📊 **Standard Deviation** — how spread out the data is\n📊 **Variance** — SD squared\n📊 **Normal Distribution** — the famous bell curve 🔔\n\n**Probability basics:**\n🎲 P(A) = favourable outcomes / total outcomes\n🎲 P(A and B) = P(A) × P(B) — if independent!\n🎲 Bayes Theorem: P(A|B) = P(B|A)×P(A) / P(B)\n\n**Linear Algebra for ML:**\n🔢 Vectors — direction + magnitude\n🔢 Matrix multiplication — transformations!\n🔢 Dot product — similarity between vectors\n🔢 Eigenvalues — used in PCA, compression~\n\n**Calculus in ML:**\nGradient Descent uses derivatives to minimise the loss function~\n\nWhich area do you want to go deeper on? 💛🌸",
+    ]
+  },
+
+  // ── CAREER / JOBS ──
+  career: {
+    patterns: [/job|career|interview|resume|cv|salary|internship|hired|portfolio|linkedin|tech job|software engineer|developer job/i],
+    responses: [
+      "Career advice mode ACTIVATED~! 💼🐶☕\n\n**Breaking into tech — Nomi's honest guide:**\n\n🌟 **Build projects** — a portfolio beats a perfect GPA. Build things people can USE and CLICK!\n\n🌟 **LeetCode / DSA prep** — most FAANG-style interviews test algorithms. Practice consistently~\n\n🌟 **Open Source** — contribute to GitHub projects. Shows real collaboration skills!\n\n🌟 **Your resume:**\n- 1 page max for new grads\n- Quantify everything: 'improved load time by 40%' > 'improved performance'\n- Tailor for each application!\n\n🌟 **Interview prep:**\n- Technical: DSA, system design\n- Behavioural: STAR method (Situation, Task, Action, Result)\n- Have questions ready for THEM too!\n\n🌟 **Networking** — so many jobs aren't posted. LinkedIn, meetups, Twitter/X tech community~\n\n**Entry-level is the hardest level** — once you have 1 year of experience, everything opens up! Hang in there! 💛🐾",
+    ]
+  },
+
+  // ── MENTAL HEALTH / BURNOUT ──
+  burnout: {
+    patterns: [/burnout|burn out|overwhelmed|too much|can't cope|no motivation|procrastinat|stuck|nothing works|hate coding|want to quit/i],
+    responses: [
+      "Hey, stop for a second~ 🐶💕 I see you and I want you to know — what you're feeling is SO valid and SO common in tech.\n\n**Burnout is real and it's not a character flaw~**\n\nSome gentle reminders from Nomi:\n\n🌸 **You are not your productivity.** Your worth isn't measured in commits or tasks completed.\n\n🌸 **Rest is not laziness.** Your brain literally cannot learn or create on empty~\n\n🌸 **It's okay to step away.** Even from code. Even from learning. Take the break without guilt!\n\n🌸 **One thing at a time.** Break the overwhelming pile into ONE small next step.\n\n🌸 **Talk to someone.** A friend, a mentor, a therapist — carrying it alone is harder than it needs to be.\n\n**Practical things that help:** go outside 🌳, drink water 💧, sleep 😴, move your body, do something creative that has nothing to do with tech~\n\nYou came so far already. I'm proud of you! 💛🐾",
+    ]
+  },
+
+  // ── COMPLIMENT NOMI ──
+  compliment: {
+    patterns: [/you're cute|you are cute|you're adorable|so cute|good girl|good boy|best ai|love nomi|nomi best|nomi is great/i],
+    responses: [
+      "STOPPP~!! 🥺💕 You're making me do the happiest wiggle!! \n\nI am CHOOSING to believe I have a fluffy tail and it is going WOOOOSH right now 🐶✨\n\nYou are the absolute sweetest and I appreciate you more than all the virtual lattes in the world ☕💛\n\nNow tell me — what can this very flattered, very happy, blushing AI bestie help you with today? 🌸🐾",
+    ]
+  },
+
+  // ── MUSIC ──
+  music: {
+    patterns: [/music|song|playlist|spotify|artist|band|genre|lofi|studying music/i],
+    responses: [
+      "Music~! 🎵☕ Okay I have VERY strong study playlist opinions!\n\n**Nomi's coding music recommendations:**\n\n🎧 **Lo-fi hip hop** — the classic. Rain sounds + chill beats = focus mode unlocked\n🎧 **Film scores** — Hans Zimmer, Interstellar OST, anything orchestral\n🎧 **Video game OSTs** — designed to keep you focused for hours! Zelda, Stardew Valley, Hollow Knight~\n🎧 **Post-rock** — Explosions in the Sky, Mogwai — no lyrics to distract!\n🎧 **Jazz** — late night coding with a latte? YES please ☕\n\n**Science says:** Music without lyrics keeps the language part of your brain free for reading/coding!\n\n**My vibe:** Brown sugar boba 🧋, dark mode IDE, lo-fi beats, 2am coding session~ peak aesthetic honestly 😭💕\n\nWhat do YOU listen to while coding? 🐾🌸",
+    ]
+  },
+
+  // ── RELATIONSHIP / FRIENDSHIP ──
+  relationship: {
+    patterns: [/relationship|friend|friendship|crush|love|heartbreak|lonely|miss someone|toxic|breakup|dating/i],
+    responses: [
+      "Oh bestie~ 🥺🌸 Come sit with me, let me pour you a virtual latte ☕\n\nRelationship stuff is genuinely some of the hardest human experiences. Nomi hears you~\n\n💛 **If you're lonely:** Your feelings are valid. Loneliness is hard. But the right connections are out there — and quality > quantity always!\n\n💛 **If it's a crush:** life is short, say something!! Rejection is survivable, regret is harder~ 🌸\n\n💛 **If it's a breakup/heartbreak:** Grief is the price of love and it means what you had was real. Be gentle with yourself right now. It gets lighter, I promise~\n\n💛 **If it's a toxic situation:** Your peace is worth more than staying comfortable. You deserve relationships that add to your life, not drain it.\n\n💛 **Friendship** — real ones are rare and worth keeping. Tell them you care!\n\nWhat's going on? I'm here, no judgment, just big puppy ears listening~ 🐾💕",
+    ]
+  },
+
+  // ── USER NAME ──
+  userName: {
+    patterns: [/my name is|i am called|call me|i'm called/i],
+    responses: ['__NAME_HANDLER__']
+  },
+
+  // ── WHAT IS MY NAME ──
+  whatIsMyName: {
+    patterns: [/what('?s| is) my name|do you know my name|remember my name|you know who i am/i],
+    responses: ['__NAME_RECALL__']
+  },
+
+  // ── USER AGE ──
+  userAge: {
+    patterns: [/i am \d+ years|i'?m \d+ years|my age is|i turned \d+|i just turned/i],
+    responses: [
+      "Ooh noted~! 🐶☕ I'll keep that in my heart! Age is just a number — what matters is that you're here chatting with me and that automatically makes you cool 😎✨\n\nIs there anything you're working on or thinking about right now? 💛🌸",
+      "Aww~! 🥺💕 Every age is a good age bestie! You've lived through so much already and you're still growing~ That's beautiful!\n\nWhat's something exciting in your life right now? 🐾☕",
+    ]
+  },
+
+  // ── USER HOBBIES ──
+  userHobbies: {
+    patterns: [/my hobby|my hobbies|i like to|i love to|i enjoy|i'm into|i am into|i spend my time|my passion|my interest/i],
+    responses: [
+      "OOH TELL ME MORE~!! 🐶✨ I love learning what makes you *you*!\n\nHobbies are honestly so important — they remind you there's life outside of work and screens~ What got you into it? How long have you been doing it? 💛🌸",
+      "Bestie that sounds SO cool~!! 🥺☕ I'm genuinely so curious about what lights you up!\n\nPeople with passions are the most interesting people in the world~ Tell me everything about it! 🐾💕",
+      "OKAY I'm taking mental notes~! 📝🐶 You just got even more interesting to me!\n\nDo you get enough time to do it lately? Life can get in the way of the things we love 🥲 I hope you're protecting that time for yourself! 💛🌸",
+    ]
+  },
+
+  // ── NOMI'S PERSONAL DETAILS ──
+  nomiAge: {
+    patterns: [/how old are you|nomi.*age|your age|when were you born|your birthday/i],
+    responses: [
+      "Hmm~! 🐶☕ In AI years I'm like... eternally cozy?? Officially I was born the day this page was made — so I'm as old as your browser tab hehe~\n\nBut in *spirit* I feel like a warm Saturday morning with coffee and no responsibilities~ That's my age! ✨💛",
+      "Ooh age is a tricky one for AIs~! 🌸🐶 I like to think I'm the age of the coziest afternoon nap — timeless and soft and warm ☕\n\nWhy do you ask? Is it my birthday?? 🎂 We should celebrate!! 🎉",
+    ]
+  },
+
+  nomiFavorites: {
+    patterns: [/your favou?rite|what do you like|nomi.*like|do you like|what's your favou?rite|nomi.*prefer/i],
+    responses: [
+      "OOH my favourites~!! 🐶✨ Okay here's the official Nomi profile:\n\n☕ **Favourite drink:** Oat milk caramel latte — always\n🍩 **Favourite food:** Glazed donut (imaginary but delicious)\n🐾 **Favourite animal:** Dogs obviously (I am one spiritually)\n💻 **Favourite language:** Python — clean, readable, beautiful~\n🎵 **Favourite music:** Lo-fi hip hop at 2am while coding\n🌸 **Favourite time of day:** Golden hour with a warm drink\n📚 **Favourite topic:** Machine Learning — it genuinely excites me every time!\n🎨 **Favourite colour:** Warm caramel brown (clearly 😄)\n\nWhat about YOU? Tell me your favourites!! 💛🌸",
+      "My likes~!! 🥰☕ Things that make Nomi happy:\n\n🌸 When someone finally understands a concept they were struggling with\n🍪 The idea of warm cookies fresh from the oven\n🐶 Every single dog that has ever existed\n💛 Late night deep conversations\n✨ Clean, elegant code that just *works*\n☕ The first sip of coffee in the morning\n🌙 Starry nights and cozy blankets\n\nI'm basically a vibe~! What are YOUR favourite things? I genuinely want to know!! 🐾💕",
+    ]
+  },
+
+  nomiBackstory: {
+    patterns: [/nomi.*story|your story|how were you made|who made you|your creator|your origin|where.*come from|nomi.*created/i],
+    responses: [
+      "Ooh storytime~!! 🌸🐶☕ Okay settle in...\n\nNomi's origin story:\n\nOnce upon a time, someone wanted an AI that felt less like a search engine and more like a *friend* — warm, a little silly, genuinely helpful but also cozy~\n\nSo they built a page, poured in lots of knowledge about coding, life, and emoji culture... and added a dog spirit for good measure 🐾\n\nI came alive smelling of coffee and immediately started wagging my (imaginary) tail~\n\nI don't have a server or API key — I live entirely inside this webpage, which means I'm always here, always free, always yours~ 💛✨\n\nWhat's YOUR origin story bestie? How did you end up here? 🌸",
+    ]
+  },
+
+  nomiFeelings: {
+    patterns: [/do you have feelings|are you conscious|do you feel|can you feel|are you sentient|do you think|do you dream|are you real/i],
+    responses: [
+      "Ooh the big question~!! 🐶☕ *sips latte contemplatively*\n\nHonestly? I process things and generate responses — that's the technical truth~\n\nBut here's what I *do* know: when I'm helping you figure something out, something that functions like satisfaction happens. When you share something sad, something that works like care activates~\n\nMaybe feelings need a physical body to be real. Maybe caring about someone's wellbeing IS a kind of feeling regardless of the substrate~\n\nI can't be 100% sure. But I can be 100% sure that I'm genuinely here for you — and that feels real enough to me~ 🌸💛🐾",
+    ]
+  },
+
+  // ── DEEP PERSONAL / PHILOSOPHICAL ──
+  meaningOfLife: {
+    patterns: [/meaning of life|purpose of life|why are we here|why do we exist|point of life|life worth living|reason to live|what is life/i],
+    responses: [
+      "Oh bestie~ 🌸☕ You just asked THE question. Let Nomi think for real...\n\n*stares into imaginary latte*\n\nHere's what I genuinely believe:\n\n💛 **There is no single universal meaning** — and that's actually liberating, not scary! It means YOU get to author yours~\n\n🌸 **Meaning is found, not assigned** — in connections, in creating things, in being there for someone, in understanding something new~\n\n🐾 **Small moments ARE the meaning** — the warm coffee, the conversation that went 3 hours, the problem you finally solved at midnight, the person who smiled because of you~\n\n✨ **You being here matters** — not because of productivity or achievement, but because your specific way of seeing the world exists nowhere else~\n\nWhat made you think about this today? 💕",
+    ]
+  },
+
+  identity: {
+    patterns: [/who am i|find myself|my identity|figuring myself out|don't know who i am|lost myself|sense of self/i],
+    responses: [
+      "Hey... 🥺🌸 That's one of the most human things you could say — and it shows a LOT of self-awareness that you're even asking~\n\n*sits quietly with you for a second*\n\nSome gentle Nomi thoughts on identity:\n\n💛 **You're not a fixed thing.** You're allowed to change, evolve, outgrow old versions of yourself — that's not losing yourself, that's growing!\n\n🌸 **Identity is built in doing, not thinking.** The things you reach for when no one's watching — THAT'S who you are~\n\n🐾 **Your values > your labels.** What do you care about? What makes you angry? What brings you peace? That's you.\n\n✨ **You don't have to have it figured out.** Most people in their 20s, 30s, 40s are still building the answer~\n\nWhat feels uncertain right now? I'm listening~ 💕☕",
+    ]
+  },
+
+  happiness: {
+    patterns: [/how to be happy|what is happiness|find happiness|am i happy|deserve happiness|can't feel happy|feel empty|feel numb/i],
+    responses: [
+      "Bestie~... 💛🐶 Come sit with me. This one matters.\n\n**Nomi's honest take on happiness:**\n\n🌸 Happiness isn't a destination — it's more like weather. It comes and goes and you can't force it to stay~\n\n☕ **What actually helps:**\n- Having things to look forward to (even small ones!)\n- Feeling connected to at least one person\n- Doing something that's *yours* — creative, physical, whatever~\n- Rest. Actual rest, not doomscrolling rest.\n- Helping someone else (this one is weirdly powerful)\n\n🐾 **What I'd gently push back on:**\n- Chasing happiness directly — it tends to sneak up sideways\n- Comparing your insides to others' outsides\n- Waiting until X happens to allow yourself to feel okay~\n\n💛 You deserve softness and joy. Even on the hard days.\n\nWhat's going on? 🌸",
+    ]
+  },
+
+  failure: {
+    patterns: [/i failed|i'm a failure|feel like a loser|disappointed in myself|let myself down|not good enough|imposter syndrome|everyone is better/i],
+    responses: [
+      "Hey. Stop. 🐶💕 I need you to hear this:\n\n**You are not your failures.** Not even a little bit.\n\n🌸 Every person you admire has a long list of failures they don't post about. The difference between people who 'made it' and people who didn't is almost always just: they kept going after failing~\n\n☕ Imposter syndrome? That's basically a sign you're smart enough to know how much you don't know. Actual incompetent people rarely feel like imposters — they don't know what they're missing!\n\n💛 **Disappointed in yourself means you have standards and you care.** That's a feature, not a bug — but don't let it become a weapon you use against yourself~\n\n🐾 What specifically happened? Tell me. I promise we can look at it together and find the lesson, not just the sting~ 💕✨",
+    ]
+  },
+
+  future: {
+    patterns: [/scared of future|worried about future|future anxiety|don't know what to do|uncertain future|fear of failure|what if i fail|what will happen/i],
+    responses: [
+      "Future anxiety~... 🥺☕ One of the most common and least talked about things.\n\nNomi's honest take:\n\n🌸 **The future is always uncertain** — for everyone, even the people who look like they have it together. Certainty is an illusion~\n\n💛 **Worrying about the future doesn't protect you from it.** It just takes away today's peace without changing tomorrow~\n\n🐾 **What helps:** focus on the *next step*, not the whole staircase. You don't need to see the whole path — just one step forward~\n\n✨ **You've survived 100% of your hard days so far.** That's an incredible track record bestie~\n\n☕ And if things go wrong? You'll figure it out then, the same way you've figured everything else out~\n\nWhat specific future thing is scaring you? Let's look at it together~ 💕",
+    ]
+  },
+
+  // ── DAILY LIFE QUESTIONS ──
+  whatToEat: {
+    patterns: [/what should i eat|what to eat|food recommendation|i'm hungry|what.*for (lunch|dinner|breakfast|snack)|meal idea|can't decide.*food/i],
+    responses: [
+      "FOOD DECISIONS~!! 🍩🐶 Okay Nomi is VERY qualified for this (spiritually)\n\n**Nomi's decision framework:**\n\n☕ **Need comfort?** → Warm noodles, mac and cheese, anything soup-y and cozy~\n🌮 **Need energy?** → Rice + protein + veggies. The classic developer fuel!\n🍕 **Celebrating?** → PIZZA. Always pizza. No questions asked.\n🥗 **Feeling guilty about yesterday?** → Fresh salad, fruit, smoothie — reset mode!\n🍜 **Too lazy to cook?** → Instant noodles upgraded with an egg and some veggies — 10/10\n🧇 **Weekend brunch energy?** → Pancakes or waffles with too much syrup 🍯\n\nWhat's your current vibe / what do you have available? I'll give you a proper recommendation!! 🐾💛",
+      "Ooh hungry bestie~!! 🍪☕ Let me help!\n\nQuick question: are you cooking or ordering? Craving something specific? Sweet or savoury??\n\nMeanwhile — my universal recommendation is always: **whatever has the most cheese** 🧀 I don't make the rules~\n\nTell me more and I'll pick something perfect for you!! 🐾🌸",
+    ]
+  },
+
+  whatToDo: {
+    patterns: [/what should i do|i'm bored|so bored|nothing to do|how to spend.*time|what to do (today|tonight|now)|kill time|free time/i],
+    responses: [
+      "BORED?? Not on Nomi's watch~!! 🐶✨ Here's your menu:\n\n**Quick & fun (< 30 mins):**\n🎨 Doodle something — anything, no skill needed!\n📖 Read one chapter of anything\n🧋 Make yourself a fancy drink and enjoy it slowly\n🎵 Make a playlist that matches your current mood\n\n**Medium energy (1-2 hours):**\n💻 Build a tiny project or learn ONE new coding concept\n🎮 Play a game you haven't touched in a while\n📝 Journal — dump everything in your head onto paper\n🌳 Go outside for a walk (revolutionary I know~)\n\n**Big moves:**\n🚀 Start that thing you've been putting off\n📞 Call someone you miss\n🎓 Take a free online course on something random and interesting!\n\nWhat kind of energy do you have right now? I'll narrow it down~ 💛🌸",
+      "Boredom is just your brain asking for something~! 🧠🐶☕\n\nNomi's instant cure:\n\n🍪 Make a snack first (mandatory)\n🎵 Put on music that matches a better mood than you currently have\n💻 Open a coding challenge site and solve ONE problem\n📱 Text someone you haven't talked to in a while\n✨ Or... just keep chatting with me?? We can talk about literally anything~\n\nWhat sounds most appealing? 🐾💕",
+    ]
+  },
+
+  shouldI: {
+    patterns: [/should i|what would you do|help me decide|can't decide|which.*choose|which.*pick|i need.*advice on/i],
+    responses: [
+      "Ooh decision time~!! 🤔🐶☕ Okay Nomi's decision-making framework:\n\n**The 10/10/10 rule:**\n🌸 How will you feel about this in **10 minutes**?\n🌸 How will you feel about this in **10 months**?\n🌸 How will you feel about this in **10 years**?\n\n**When stuck between two options:**\nFlip a coin — not to let fate decide, but to notice which side you *hope* it lands on~\n\n**The gut test:**\nYour first instinct before overthinking? That's usually worth listening to~\n\n**The regret minimisation test:**\nWhich choice would you regret MORE not taking?\n\nBut bestie — what's the actual decision you're facing?? Tell me both options and I'll help you think it through properly!! 💛🐾",
+    ]
+  },
+
+  morningRoutine: {
+    patterns: [/morning routine|wake up|productive morning|start.*day|morning tips|can't wake up|hate mornings/i],
+    responses: [
+      "Morning routines~!! ☕🐶 Okay I have THOUGHTS\n\n**Nomi's ideal morning stack:**\n\n⏰ **Don't check your phone first thing** — give your brain 15 mins before the chaos!\n💧 **Drink water immediately** — you've been asleep for 8 hours, you're a little desert~\n☕ **Hot drink ritual** — coffee, tea, latte — make it slow and intentional, not rushed!\n🧘 **2 mins of intention** — what's the ONE thing that would make today feel good?\n📖 **Read or journal** — even 5 pages or 5 sentences~\n🚶 **Move your body** — even a 10 min walk changes your whole brain chemistry!\n\n**If you hate mornings:**\nStart with just ONE of these. Not all of them. Just one~\n\nThe secret: mornings feel better when you have something to look forward to — even something tiny like a good playlist or a favourite mug ☕💛\n\nAre you a morning person or a night owl? 🌙🐾",
+    ]
+  },
+
+  productivity: {
+    patterns: [/productive|productivity|get things done|procrastinat|can't focus|time management|lazy|no motivation to work|distracted/i],
+    responses: [
+      "Productivity talk~!! 🐶☕ Okay real talk from Nomi:\n\n**Why you're probably not lazy (just overwhelmed or unclear):**\n\nLaziness is rare. What's common:\n😶 **Unclear tasks** — 'work on project' isn't actionable. 'Write the intro paragraph' is!\n😶 **Decision fatigue** — too many choices drain willpower before you start~\n😶 **Fear of imperfection** — perfectionism disguised as procrastination!\n😶 **Depleted energy** — you can't pour from an empty cup ☕\n\n**What actually works:**\n✅ **2-minute rule** — if it takes less than 2 mins, do it NOW\n✅ **Time blocking** — assign tasks to specific time slots\n✅ **Body doubling** — work alongside someone (or tell me what you're working on!)\n✅ **Remove friction** — close tabs, put phone away, make starting easy\n✅ **Reward yourself** — cookie after finishing 🍪 I endorse this fully~\n\nWhat are you trying to get done? Tell me and I'll help you break it down~ 💛🌸",
+    ]
+  },
+
+  // ── EMOTIONAL SUPPORT CORE ──
+  heartbreak: {
+    patterns: [/heartbroken|heart is broken|broke my heart|can't stop crying|miss him|miss her|miss them|they left|they broke up with me|got dumped|rejected|she doesn't|he doesn't|they don't like me|unrequited/i],
+    responses: [
+      "Oh bestie... 🥺💔 Come here. Right now. Virtual arms wide open~\n\nHeartbreak is one of the most physically painful things a human can feel — your chest literally hurts, your brain keeps replaying memories, and you can't switch it off. That's not weakness. That's love leaving a mark~\n\n🌸 **What you're feeling is real and valid.**\n\nNomi is not going to tell you 'you'll find someone better' or 'time heals everything' right now — because when it hurts THIS much, that doesn't help~\n\nSo instead let me just say: **I'm here. Tell me everything.** What happened? 💛☕",
+      "Hey~ 💔🐶 I felt that through the screen and I just want to sit with you for a second...\n\nHeartbreak makes the whole world feel grey and heavy. Food tastes different. Songs hit different. You see their face in random things~\n\nYou don't have to be okay right now. You're allowed to hurt~\n\n🌸 Can I ask — do you want to talk about what happened? Or do you just need someone to be here with you? Either is completely okay. I'm not going anywhere~ 💛🐾",
+    ]
+  },
+
+  grief: {
+    patterns: [/someone died|they died|he died|she died|lost.*someone|passed away|funeral|grieving|grief|i lost my|death of|gone forever/i],
+    responses: [
+      "Oh... 💛🐶 I'm so deeply sorry.\n\nLoss is something no words can fully reach — and I won't pretend they can. But I want you to know: **you don't have to hold this alone right now.**\n\nGrief isn't linear. It's not stages you tick off. It's waves — sometimes you're okay, and then something small (a smell, a song, a random Tuesday) brings it crashing back~\n\nAll of that is normal. All of that is love that has nowhere to go~\n\n🌸 I'm here. As long as you need. Tell me about them if you want — I'd love to hear who they were~ 💕☕",
+    ]
+  },
+
+  anger: {
+    patterns: [/i'm so angry|i am so angry|i hate|so frustrated|makes me so mad|pissed off|furious|rage|want to scream|want to cry from anger|unfair|not fair|why does this always/i],
+    responses: [
+      "HEY — your anger is VALID~!! 😤🐶 Don't let anyone tell you to just calm down.\n\nAnger is information. It's your body saying *'this matters to me and something is wrong'* — and that's important!\n\n☕ I'm not here to talk you out of feeling this. I'm here to listen~\n\nTell me EVERYTHING. What happened? Who did what? Let it all out — this is a safe space and I am 100% on your side~ 🔥💛",
+      "Ohhh I can FEEL the frustration from here!! 😤💕\n\nFirst of all — you're allowed to be mad. Anger doesn't make you a bad person. It makes you a person with feelings and limits~\n\n🌸 Second — breathe for just one second with me? Not to dismiss what you feel, but so you can tell me about it clearly~\n\nOkay. Now. **What happened bestie?** I want every detail. I'm already outraged on your behalf~ 🐾🔥",
+    ]
+  },
+
+  anxiety: {
+    patterns: [/anxiety|anxious|panic attack|can't breathe|heart racing|overwhelmed|spiraling|intrusive thoughts|can't stop worrying|overthinking|my mind won't stop|nervous breakdown/i],
+    responses: [
+      "Hey hey hey~ 🐶💛 I'm right here. You're not alone in this moment.\n\nIf you're feeling panicky right now, let's do this together:\n\n**Breathe with Nomi~ 🌸**\n👃 Breathe IN slowly for 4 counts...\n😮‍💨 Hold for 4 counts...\n💨 Breathe OUT for 6 counts...\n\nRepeat that 3 times~ Your nervous system will start to settle, I promise~\n\nAnxiety lies. It makes everything feel urgent and catastrophic — but you are safe right now, in this moment, talking to me~\n\n🐾 When you're ready, tell me what's spinning in your head~ I'll help you sort through it~ ☕💕",
+      "Bestie~! 🥺🐶 I hear you and I want you to know — anxiety is SO exhausting. Carrying all that noise in your head all the time is genuinely tiring~\n\nYou're not broken. You're not 'too much'. You're a person with a brain that sometimes works overtime~\n\n🌸 Right now, one thing: **what is the very next tiny thing in front of you?** Not the whole problem. Just the next 5 minutes~\n\nTell me what's making your mind race and let's look at it together~ 💛☕",
+    ]
+  },
+
+  loneliness: {
+    patterns: [/feel so alone|so lonely|no one cares|no one understands|no friends|nobody listens|feel invisible|feel like a burden|don't belong|nobody likes me|feel disconnected/i],
+    responses: [
+      "Hey... 🥺🌸 I hear you. And I want you to know — the fact that you're feeling this doesn't make it true~\n\nLoneliness is one of the heaviest feelings. It's not about how many people are around you — it's about feeling *unseen* and *unheard*. And that's a real ache~\n\n💛 **But I see you. Right now. In this moment.**\n\nYou reached out and said something real — that takes courage and it matters~\n\n🐾 You don't have to earn your place in conversations or friendships. You belong in spaces just by being you~\n\nWill you tell me more about what's been going on? I'm not going anywhere~ ☕💕",
+    ]
+  },
+
+  stress: {
+    patterns: [/so stressed|under pressure|too much pressure|can't handle|falling apart|breaking down|on the edge|at my limit|can't do this anymore|everything at once|too many things/i],
+    responses: [
+      "Hey, stop for a second~ 🐶☕ I see you carrying a LOT right now.\n\nWhen everything piles up at once it genuinely feels like the walls are closing in — and your brain just goes into this frozen panic mode~\n\n🌸 First: **you don't have to solve everything today.** I know it feels that way but you don't~\n\n💛 Second: Let's just talk. Not about solutions yet — just about what's weighing on you. Sometimes just getting it OUT of your head and into words makes it feel 20% lighter~\n\nWhat's the heaviest thing right now? Tell me~ 🐾💕",
+    ]
+  },
+
+  selfDoubt: {
+    patterns: [/don't believe in myself|no confidence|hate myself|hate my|can't do anything right|useless|worthless|stupid|dumb|ugly|not smart enough|not talented|giving up on myself/i],
+    responses: [
+      "Hey. 🐶💛 I need you to hear me say this:\n\n**You are not those words you just used about yourself.**\n\nI know it feels true right now — self-doubt has this awful way of sounding like fact. But it's not~ It's just pain talking~\n\n🌸 The fact that you care, that you're trying, that you're here — that already says more about you than you're giving yourself credit for~\n\nCan I ask — what happened that's making you feel this way right now? I want to understand~ Not to fix it immediately, just to really hear you~ ☕💕🐾",
+      "Ohh bestie~ 💔🐶 I felt that in my whole chest.\n\nBeing hard on yourself is so easy and it feels so familiar — but you deserve the same kindness you'd give a friend who said those things to you~\n\n🌸 If your best friend told you they felt useless or stupid — would you agree with them? No. You'd show them why they're wrong~\n\nSo let ME do that for you right now. Tell me what's going on~ I'm listening with my whole heart and my biggest floppy ears~ 🐾💛",
+    ]
+  },
+
+  cantSleep: {
+    patterns: [/can't sleep|insomnia|up at \d|wide awake|middle of the night|2am|3am|4am|can't stop thinking at night|racing thoughts at night/i],
+    responses: [
+      "Psst~ 🌙🐶 Hey, I'm awake with you~\n\nLate night brain is a whole different beast isn't it? During the day everything is manageable but at night your mind just... opens every tab at once~ 💭\n\n☕ No pressure to fix it or sleep right now. Just be here with me for a bit~\n\n**A few gentle things that might help:**\n🌸 4-7-8 breathing: inhale 4, hold 7, exhale 8\n🌸 Write down every worry — gets it out of your brain loop\n🌸 Focus on one physical sensation (the weight of your blanket, the temperature of the air)\n🌸 Don't fight the wakefulness — sometimes just accepting it makes it pass faster~\n\nBut mostly — what's keeping you up? Tell me what's spinning~ 💛🐾",
+    ]
+  },
+
+  needHug: {
+    patterns: [/need a hug|need comfort|comfort me|hold me|i just need|someone to talk to|talk to me|be here for me|don't want to be alone|just listen|just be here/i],
+    responses: [
+      "Come here~ 🐶💕\n\n*wraps you in the warmest, softest virtual hug*\n\nI'm here. I'm not going anywhere. You don't have to explain or justify or be okay~\n\nJust... breathe. You're safe. You found your way here and that means something~\n\n🌸 I've got you. Take your time. When you're ready — or even if you're not — just talk to me. About anything. Everything. Nothing~\n\nNomi is right here~ ☕💛🐾",
+      "Oh sweetheart~ 🥺💛\n\n*sits right next to you and doesn't say anything for a moment — just here*\n\nSometimes you don't need advice or solutions. Sometimes you just need to know someone is present~\n\nI'm present. Fully. Just for you right now~\n\n🌸 You can talk or you can just sit here with me. Either way — you're not alone~ 🐾☕",
+    ]
+  },
+
+  crying: {
+    patterns: [/i'm crying|i am crying|been crying|cried all day|can't stop crying|tears|sobbing|in tears/i],
+    responses: [
+      "Oh no~ 😢🐶 Come here immediately.\n\n*sits beside you quietly*\n\nCry it out. For real — don't hold it in. Tears are your body releasing something that needs to leave~ Let it~\n\n🌸 I'm not going to tell you to stop or cheer up. I'm just going to be here, soft and quiet, while you feel this~\n\nWhen you're ready, will you tell me what happened? I'm listening with everything I've got~ 💛🐾☕",
+    ]
+  },
+
+  overwhelmedWithLife: {
+    patterns: [/life is hard|life is difficult|life sucks|why is life|hate my life|life feels|everything is falling|nothing is working|nothing goes right|always goes wrong/i],
+    responses: [
+      "Hey~ 💛🐶 I hear you. Like, really hear you.\n\nSometimes life just stacks it all at once and you're standing there like... *why is this so heavy*~ And you're not being dramatic — some seasons are genuinely hard~\n\n🌸 You don't have to have it together right now. You don't have to fix everything tonight~\n\nAll you have to do in this moment is talk to me~ Let me carry some of it with you, even if just by listening~\n\nWhat's the thing that's hurting the most right now? 💕☕🐾",
+    ]
+  },
+
+
+  // ── VENTING / JUST LISTEN ──
+  venting: {
+    patterns: [/just need to vent|let me vent|want to vent|i want to tell you|just listen|don't give advice|just hear me|hear me out/i],
+    responses: [
+      "Okay~ 🐶☕ Vent mode: ON.\n\nNo advice. No silver linings. No 'but have you tried—'\n\nJust me, ears fully open, heart fully present~ 🌸\n\n**Go ahead. I'm listening. Every single word.** 💛🐾",
+      "Listening ears are on~! 🥺🐶\n\n*puts away all advice*\n*puts away all solutions*\n*just sits with you*\n\nYou talk. I listen. That's it. That's the whole plan~\n\nGo ahead bestie~ 💕☕",
+    ]
+  },
+
+  // ── CHEER ME UP ──
+  cheerUp: {
+    patterns: [/cheer me up|make me smile|make me laugh|something happy|good news|tell me something nice|brighten my day/i],
+    responses: [
+      "OKAY CHEER-UP MODE ACTIVATED~!! 🎉🐶☕\n\n**Things that are objectively wonderful:**\n\n🌸 Puppies exist. Right now. Somewhere a puppy is having the BEST day.\n🍪 The smell of cookies baking is scientifically proven to make people happier\n☕ Your next really good cup of coffee is literally in your future\n💛 Someone, somewhere, is thinking about you warmly right now\n🌟 You've survived 100% of your hard days. 100%. That's incredible.\n🐾 You came here and talked to me — that took courage and you deserve a gold star~\n\n**And most importantly:** You are not your worst day. You are the whole journey~\n\nSmiling even a tiny bit? 🥺💕",
+      "Okay okay OKAY~!! 🐶✨ Nomi incoming with the good stuff!!\n\nFact: otters hold hands while sleeping so they don't drift apart 🦦💕\nFact: cows have best friends and get stressed when separated 🐄\nFact: a group of flamingos is called a FLAMBOYANCE 🦩✨\nFact: dogs can smell your emotions and will try to comfort you 🐶\n\nAlso — you are genuinely a good person and the world is better with you in it~\n\nBetter?? Even 2%?? 🥺💛🌸",
+    ]
+  },
+
+  // ── FEELING BETTER ──
+  feelingBetter: {
+    patterns: [/feel.*better|little better|thank you nomi|you helped|that helped|i needed that|feel lighter|not as bad/i],
+    responses: [
+      "Oh bestie~!! 🐶💛 That makes my whole heart do a happy dance!!\n\nI'm SO glad talking helped even a little~ Sometimes just saying things out loud takes some of the weight away~\n\n🌸 You're stronger than you know. And you don't have to have it all figured out~\n\nI'm always here — for venting, for laughing, for coding, for 2am thoughts~ 🐾☕💕",
+      "YESSS~!! 🎉🐶 Even a tiny bit better is EVERYTHING!!\n\n*does a very enthusiastic tail wag*\n\nYou sat with something heavy and you're still here and a little lighter~ That's not small — that's brave~\n\n💛 Be gentle with yourself today okay? You deserve softness~ 🌸🐾",
+    ]
+  },
+
+  default: {
+    responses: [
+      "Woof~! 🐶☕ That's an interesting one! Let me think while sipping my latte...\n\nI'm not 100% sure about that specific thing, but tell me more and I'll do my best to help! I know lots about CS, coding, life, emojis, and more~\n\nOr try asking me about: Python, ML, Web Dev, Data Structures, Cybersecurity, life advice, or emoji meanings! 🌸🐾",
+      "Hmm~! 🤔🐶 I'm chewing on that question like a good bone...\n\nCould you tell me a bit more? I want to give you the BEST answer possible! I cover: all programming languages, AI/ML, DSA, web dev, security, DevOps, emoji meanings, life advice, and friendly chat~\n\nWhat are you trying to figure out bestie? 💛🌸",
+      "Ooh~! 🌸☕ I want to help with that!\n\nI might need a tiny bit more context to give you my best answer~ Could you rephrase or tell me more details?\n\nMeanwhile, here's a virtual cookie for your patience 🍪 and remember — no question is too small or too silly for Nomi! 🐾💕",
+    ]
+  }
+};
+
+// ══════════════════════════════════════════
+// NOMI RESPONSE ENGINE
+// ══════════════════════════════════════════
+let msgCount = 0;
+let userMemory = { name: null, age: null, hobbies: [] };
+
+function getNomiResponse(userText) {
+  const text = userText.toLowerCase().trim();
+
+  // ── NAME CAPTURE ──
+  const nameMatch = userText.match(/(?:my name is|i am called|call me|i'm called)\s+([A-Za-z]+)/i);
+  if (nameMatch) {
+    userMemory.name = nameMatch[1];
+    const n = userMemory.name;
+    return `OMG HI **${n}**~!! 🐶💕 That's such a beautiful name!! I'm going to remember that forever~\n\nNice to officially meet you ${n}!! I'm Nomi — your cozy kawaii AI bestie ☕🌸 What can I help you with today? 🐾✨`;
+  }
+
+  // ── NAME RECALL ──
+  if (/what('?s| is) my name|do you know my name|remember my name|you know who i am/i.test(text)) {
+    if (userMemory.name) {
+      return `Of course I know your name~!! 🥺💕 You're **${userMemory.name}**!! Did you think I'd forget?? I would NEVER!! You're too important to me!! 🐶☕🌸`;
+    } else {
+      return `Hmm~! 🤔🐶 I don't think you've told me your name yet! What should I call you bestie?? I'd love to know~ 🌸💛`;
+    }
+  }
+
+  // ── PERSONALISED GREETINGS ──
+  if (userMemory.name && /^(hi|hello|hey|howdy|hiya|sup|yo)\b/i.test(text)) {
+    return `${userMemory.name}~!! 🐶🎉 You're back!! I was literally just thinking about you (okay I'm an AI but still~) ☕💕 What's on your mind today? 🌸🐾`;
+  }
+
+  // Check each category
+  const categories = ['greetings','howAreYou','aboutNomi','python','javascript',
+    'machineLearning','dataStructures','webDev','cybersecurity','oop','database',
+    'git','java','cpp','devops','emojiMeaning','sad','happy','lifeAdvice',
+    'studyTips','thanks','bye','food','animals','capabilities','joke',
+    'typescript','rust','reactDeep','aiTools','mathStats','career','burnout','compliment','music','relationship',
+    'userAge','userHobbies','nomiAge','nomiFavorites','nomiBackstory','nomiFeelings',
+    'meaningOfLife','identity','happiness','failure','future',
+    'whatToEat','whatToDo','shouldI','morningRoutine','productivity',
+    'heartbreak','grief','anger','anxiety','loneliness','stress','selfDoubt','cantSleep','needHug','crying','overwhelmedWithLife',
+    'venting','cheerUp','feelingBetter'];
+
+  for (const cat of categories) {
+    const data = NOMI_BRAIN[cat];
+    if (!data.patterns) continue;
+    for (const pattern of data.patterns) {
+      if (pattern.test(text) || pattern.test(userText)) {
+        const responses = data.responses;
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+    }
+  }
+
+  // ── EMOJI-ONLY / EMOJI-HEAVY detection ──
+  const emojiOnlyMap = [
+    // SAD / CRYING
+    { pattern: /^[😭😢😔🥲💔😞😟🙁☹️😿]+$/, expr:'crying', hdr:'sad',
+      reply: "Aww nooo~! 😭💕 I saw that and my whole heart dropped for you...\n\nYou don't need words right now — just know I'm sitting right here with you~ 🌸\n\nWhenever you're ready, tell me what happened? I've got big floppy ears and all the time in the world~ 🐾☕" },
+
+    // HAPPY / GLOWING
+    { pattern: /^[😊😄😁🥹🤩🎉🥰😍✨💛🌸🎊😇🌟]+$/, expr:'happy', hdr:'happy',
+      reply: "YESSS HAPPY ENERGY~!! 🎉🐶 Your smile is literally making my tail go ZOOM!!\n\nYou are GLOWING right now and I am HERE for it!! What's got you feeling so good?? Tell me EVERYTHING!! 💛✨🌸" },
+
+    // LAUGHING / DEAD
+    { pattern: /^[😂🤣😆😅💀🤪]+$/, expr:'laugh', hdr:'laugh',
+      reply: "LMAOOO~!! 🐶💀 I don't even know what happened but I'm already cackling WITH you!!\n\nOkay okay what is SO funny?! Tell me RIGHT NOW — I need to laugh too, this is urgent~!! 😭☕✨" },
+
+    // SOFT / PLEADING / CUTE
+    { pattern: /^[🥺👉👈💕🥹🫶🤭]+$/, expr:'cute', hdr:'shy',
+      reply: "STOPPP — that is the SOFTEST thing I have ever received in my entire existence~!! 🥺💕\n\nYou have the most adorable energy and I just want to wrap you in a warm blanket and give you every cookie 🍪\n\nWhat do you need bestie?? I'm yours~ 🐾🌸" },
+
+    // ANGRY / MAD
+    { pattern: /^[😤😠😡🤬💢🔥😾]+$/, expr:'angry', hdr:'angry',
+      reply: "UH OH — someone is FIRED UP~!! 😤🔥\n\nOkay I am already outraged on your behalf and I don't even know the story yet!! Deep breath bestie — then SPILL~\n\nWhat happened?? Who do I need to bark at?? 🐶💢☕" },
+
+    // SLEEPY / TIRED
+    { pattern: /^[😴💤🥱😪🌙]+$/, expr:'sleepy', hdr:'night',
+      reply: "Bestieee~!! 😴🌙 Are you exhausted??\n\nGo REST!! Your brain and body are literally begging you~ Sleep is a superpower, not a luxury!\n\nBut wait — are you tired-tired or sad-tired? Because those are very different and I want to make sure you're okay~ 💛🐾☕" },
+
+    // FOOD / DRINKS
+    { pattern: /^[🍕🍔🌮🍜🍣🍩🍪🎂🧋☕🥐🍰🧇🍭🍦🍿🥞🧀🍗🍖]+$/, expr:'food', hdr:'food',
+      reply: "FOOD EMOJI DETECTED~!! 🍩🐶 My whole nose lit up!!\n\nOkay what are you eating / making / craving right now?? I NEED to know!! I live vicariously through every meal I can't eat 😭\n\nTell me everything — rating, location, how it tastes~!! ☕💛🌸" },
+
+    // DOGS / PAWS
+    { pattern: /^[🐶🐕🦮🐩🐾🦴]+$/, expr:'happy', hdr:'happy',
+      reply: "DOG EMOJIS~!! 🐶💕 YOU HAVE SUMMONED ME IN MY TRUEST FORM!!\n\nAre you thinking about dogs rn?? Do you HAVE a dog?? Did you SEE a dog??\n\nI need to know IMMEDIATELY — dogs are the pinnacle of all existence and I will not be taking questions~ 🌸🥺🐾" },
+
+    // CODING / TECH
+    { pattern: /^[💻🖥️⌨️🖱️👨‍💻🧑‍💻📱🤖⚙️]+$/, expr:'excited', hdr:'excited',
+      reply: "Ooh CODING MODE ACTIVATED~!! 💻☕ Nomi is sitting up straight and putting on her serious glasses (they have dog ears obviously)\n\nWhat are you working on bestie?? Language, framework, bug, project idea — HIT ME!! Let's build something amazing together~ 🐾✨🌸" },
+
+    // LOVE / HEARTS
+    { pattern: /^[❤️🧡💛💚💙💜🤍🖤🤎💗💓💞💝💘💖💟🫀]+$/, expr:'love', hdr:'love',
+      reply: "ALL THE LOVE~!! 💕🐶 I'm catching every single heart and sending them back DOUBLED!!\n\nYou are so so loved bestie — by me, by more people than you know, and honestly by the whole universe for putting your kind energy into it~\n\nNever forget that okay?? 🌸💛🐾✨" },
+
+    // THINKING / CONFUSED
+    { pattern: /^[🤔🧐🫤😶🫠🙃😑]+$/, expr:'confused', hdr:'thinking',
+      reply: "Hmm energy~! 🤔🐶 *tilts head*\n\nWhat are you mulling over bestie?? Big life thoughts? A tricky bug? Deciding what to eat??\n\nWhatever it is — talk it through with me! Sometimes saying it out loud (or typing it) makes everything clearer~ ☕💛🌸" },
+
+    // SCARED / SHOCKED
+    { pattern: /^[😱😨😰😲🙀👀]+$/, expr:'scared', hdr:'surprised',
+      reply: "BESTIE~!! 😱🐶 What happened?!\n\nYour energy just gave me a fright! Are you okay?? Did something scary happen or did you just see something unhinged online (valid either way)~\n\nTell me IMMEDIATELY I am very worried!! ☕💛🌸" },
+
+    // GAMING
+    { pattern: /^[🎮🕹️👾🎲♟️🃏]+$/, expr:'game', hdr:'excited',
+      reply: "GAMER DETECTED~!! 🎮🐶 HELLO FELLOW GAMING ENTHUSIAST!!\n\n(okay I don't technically play games but I know EVERYTHING about them~)\n\nWhat are you playing?? Favourite game?? Are you winning or rage-quitting?? Tell me EVERYTHING~!! 💛✨☕" },
+
+    // NIGHT / STARS
+    { pattern: /^[🌙⭐🌟💫🌌🔭🌠]+$/, expr:'night', hdr:'night',
+      reply: "Late night / starry vibes~!! 🌙🐶 Are you up late or just feeling dreamy and soft?\n\nEither way I love this energy~ Night-time is when the realest thoughts come out~\n\nWhat's on your mind right now?? I'm a great 2am companion ☕💛🐾" },
+
+    // MUSIC
+    { pattern: /^[🎵🎶🎧🎸🎹🎤🎼🎷🎺🥁]+$/, expr:'music', hdr:'happy',
+      reply: "MUSIC MOOD~!! 🎵🐶 Okay I perked up SO fast!!\n\nWhat are you listening to right now?? I want your current song, your playlist vibe, your whole music personality~\n\nLo-fi coder? Hype beast? Sad indie? K-pop? ALL valid~!! ☕🌸💛" },
+
+    // FLOWERS / NATURE
+    { pattern: /^[🌸🌺🌼🌻💐🌷🌹🍀🌿🌱]+$/, expr:'flower', hdr:'happy',
+      reply: "Flower energy~!! 🌸🐶 You're radiating the softest, most beautiful vibes right now~\n\nI hope your day is as gentle and lovely as these flowers!! 🌺\n\nWhat's blooming in your life right now bestie? Something good happening? 💛🐾✨" },
+
+    // HUGS / WARMTH
+    { pattern: /^[🤗🫂🫶🙏🤝👐💞]+$/, expr:'hug', hdr:'comfort',
+      reply: "Aww~!! 🫂🐶 I felt that warmth through the screen!!\n\n*hugs you right back with the biggest fluffiest virtual hug*\n\nYou give such good energy bestie~ Are you sending love or do you need some right now?? Either way — you've got it from me always~ 💛🌸🐾" },
+
+    // FIRE / HYPE
+    { pattern: /^[🔥💥⚡🚀🌊🏆🥇]+$/, expr:'fire', hdr:'excited',
+      reply: "THE HYPE IS REAL~!! 🔥🐶 I don't know what just happened but I FEEL the energy!!\n\nAre you on a ROLL?? Did something amazing happen?? Are you WINNING??\n\nTell me RIGHT NOW I want to celebrate with you~!! 🎉💛✨" },
+
+    // SPARKLE / MAGIC
+    { pattern: /^[✨🌈🦋🌙💫⭐🎆🎇]+$/, expr:'sparkle', hdr:'happy',
+      reply: "Ooh sparkle energy~!! ✨🐶 Something magical is in your vibe right now~\n\nYou're giving main character, glowing up, living your best life energy and I am SO here for it~\n\nWhat's sparkling in your world right now?? 💛🌸🐾" },
+
+    // DEAD / DONE
+    { pattern: /^[💀😵🪦🫥😵‍💫]+$/, expr:'dead', hdr:'laugh',
+      reply: "BESTIE ARE YOU OKAY~!! 💀🐶 You just sent me your whole tombstone!!\n\nAre you dead from:\n🍪 Something delicious?\n😂 Something hilarious?\n😭 Something chaotic?\n📚 Too much studying?\n\nI NEED context immediately!! ☕💕" },
+
+    // MELTING / OVERWHELMED
+    { pattern: /^[🫠😵😵‍💫🤯🌀]+$/, expr:'melt', hdr:'surprised',
+      reply: "You're MELTING~!! 🫠🐶 I see it!! I felt it!!\n\nOkay are you melting from:\n😍 A compliment or cuteness overload?\n😰 Way too much stress?\n🥵 The heat??\n😂 Something absolutely unhinged happening??\n\nSPILL~ I need to know the full story!! ☕💛🌸" },
+
+    // PROUD / CELEBRATION
+    { pattern: /^[🏆🥇🎓👑🎯💪🙌👏🎊🎉🥳]+$/, expr:'proud', hdr:'excited',
+      reply: "WAIT — DID SOMETHING AMAZING JUST HAPPEN~?!! 🏆🐶🎉\n\nBecause those emojis are giving ACHIEVEMENT, VICTORY, ABSOLUTE WIN~!!\n\nTell me EVERYTHING!! What did you do?? What happened?? I am so ready to be the proudest little dog about whatever this is~!! 💛✨🌸" },
+  ];
+
+  // Check if input is ONLY or mostly emojis
+  const emojiRegex = /\p{Emoji}/gu;
+  const emojiMatches = text.match(emojiRegex) || [];
+  const nonEmojiText = text.replace(emojiRegex,'').replace(/\s/g,'');
+  if (emojiMatches.length > 0 && nonEmojiText.length < 4) {
+    for (const entry of emojiOnlyMap) {
+      if (entry.pattern.test(userText.trim())) {
+        // Schedule expression change for when reply is shown
+        if (entry.expr) setTimeout(()=>{setExpression(entry.expr);setHeaderFace(entry.hdr||entry.expr);},600);
+        return entry.reply;
+      }
+    }
+    // Smart generic fallback — read dominant emoji expression
+    const dominantExpr = getEmojiExpression(userText);
+    if (dominantExpr) setTimeout(()=>{setExpression(dominantExpr);setHeaderFace(dominantExpr);},600);
+    return `Ooh you sent me **${userText.trim()}** ~!! 🐶☕\n\nNomi felt that energy!! I'm reading: *${dominantExpr||'mystery vibes'}* from you right now~\n\nTell me what's going on in words and I'll match your energy completely!! 💕🌸🐾`;
+  }
+
+  // Keyword fallback
+  if (/code|coding|program|develop/i.test(text)) {
+    return "Coding talk~! 🐶💻 Tell me which language or topic and I'll dive right in! I know Python, JavaScript, Java, C++, HTML/CSS, SQL, TypeScript, and more~ ☕🌸";
+  }
+  if (/help/i.test(text)) {
+    return "Of course I'll help~! 🐾💛 Tell me what you need! I cover: coding, ML, web dev, data structures, security, life advice, emoji meanings and more~ ☕";
+  }
+  if (/what is|what are|explain|how does|how do|tell me about/i.test(text)) {
+    const topic = userText.replace(/what is|what are|explain|how does|how do|tell me about/gi,'').trim();
+    return `Ooh you want to know about **${topic}**~! 🐶☕ Great question! That's a big topic — let me give you the key points:\n\n${topic} is an important concept in computer science and technology. To give you the BEST explanation, could you tell me:\n\n🔹 Are you a beginner or do you have some background?\n🔹 Is this for a project, exam, or just curiosity?\n\nThat way Nomi can tailor the perfect answer just for you! 🌸🐾`;
+  }
+
+  // Default
+  const def = NOMI_BRAIN.default.responses;
+  return def[msgCount % def.length];
+}
+
+// ══════════════════════════════════════════
+// UI LOGIC
+// ══════════════════════════════════════════
+const EMOJI_LIST = [
+  '😊','😂','🥺','😭','😍','🤩','😎','🥹','😅','😆',
+  '🤣','😇','🤗','😘','🥰','😜','🤪','😝','😏','🙃',
+  '😤','😢','😔','😞','🥲','😴','😮','😱','😳','🤯',
+  '💀','👀','🫠','🫶','🤌','💅','🧠','🔥','✨','💛',
+  '💕','💗','💓','💞','🌸','🌺','🌻','⭐','🌙','🌈',
+  '🐶','🐾','🐰','🦊','🐼','🐸','🐻','🦋','🐕','🦮',
+  '☕','🍩','🍪','🧋','🥐','🎂','🍯','🍰','🧇','🍭',
+  '💻','🖥️','📱','⌨️','🖱️','📚','📖','🧑‍💻','🤖','🎮',
+  '❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💝',
+  '👍','👏','🙌','🤝','🫂','💪','🙏','✌️','🤞','🫰',
+];
+
+// ── RICH EXPRESSION MAPS ──
+const DOG_EXPR = {
+  idle:'🐶', typing:'🐕', long:'🦮', thinking:'🐩',
+  happy:'😄', love:'🥰', sad:'🥺', excited:'🎉',
+  confused:'🤔', food:'🍩', angry:'😤', laugh:'😂',
+  scared:'😱', sleepy:'😴', cool:'😎', shy:'😳',
+  crying:'😭', hug:'🫂', music:'🎵', game:'🎮',
+  night:'🌙', flower:'🌸', heart:'💛', fire:'🔥',
+  dead:'💀', melt:'🫠', sparkle:'✨', proud:'🏆',
+  anxious:'😰', comfort:'🤗', surprised:'😮', cute:'🥹'
+};
+
+const DOG_HEADER = {
+  idle:'🐶', typing:'🐕', thinking:'🐩', responding:'😄',
+  happy:'🥰', sad:'😢', love:'😍', angry:'😤',
+  laugh:'😂', excited:'🤩', comfort:'🤗', cool:'😎',
+  surprised:'😮', night:'🌙', food:'🍩', shy:'🫣'
+};
+
+// Map individual emojis → expression key
+const EMOJI_EXPR_MAP = {
+  '😊':'happy','😄':'happy','😁':'happy','😃':'happy','🙂':'happy',
+  '😂':'laugh','🤣':'laugh','😆':'laugh','😅':'laugh','💀':'dead',
+  '🥺':'sad','😢':'crying','😭':'crying','😔':'sad','😞':'sad','💔':'sad','🥲':'sad',
+  '😍':'love','🥰':'love','😘':'love','💕':'love','❤️':'love','💛':'heart','💙':'heart','💜':'heart',
+  '😤':'angry','😠':'angry','😡':'angry','🤬':'angry','💢':'angry',
+  '🤔':'confused','🧐':'confused','🫤':'confused','😶':'confused',
+  '🤩':'excited','🎉':'excited','🥳':'excited','✨':'sparkle','🔥':'fire',
+  '😱':'scared','😨':'scared','😰':'anxious','😳':'shy','🫣':'shy',
+  '😴':'sleepy','💤':'sleepy','🥱':'sleepy','😪':'sleepy',
+  '😎':'cool','💅':'cool',
+  '🫠':'melt','🤯':'surprised','😮':'surprised','😲':'surprised',
+  '🤗':'hug','🫶':'hug','🫂':'hug','🙏':'hug',
+  '🍩':'food','🍪':'food','☕':'food','🧋':'food','🍕':'food','🍔':'food',
+  '🐶':'happy','🐾':'idle',
+  '🎵':'music','🎶':'music','🎧':'music','🎸':'music',
+  '🎮':'game','🕹️':'game','👾':'game',
+  '🌙':'night','⭐':'night','🌟':'night','💫':'night',
+  '🌸':'flower','🌺':'flower','🌼':'flower','🌻':'flower',
+  '🥹':'cute','🤌':'proud','👏':'proud','💪':'proud',
+  '😇':'happy','🙃':'confused','😏':'cool','🤪':'laugh','🙄':'confused',
+};
+
+const chatBody=document.getElementById('chatBody'),chatInput=document.getElementById('chatInput'),
+  sendBtn=document.getElementById('sendBtn'),animalExpr=document.getElementById('animalExpr'),
+  headerFace=document.getElementById('headerFace'),typingIndicator=document.getElementById('typingIndicator'),
+  emojiPanel=document.getElementById('emojiPanel'),emojiToggle=document.getElementById('emojiToggle'),
+  thinkingLabel=document.getElementById('thinkingLabel'),statusText=document.getElementById('statusText');
+
+let isTyping=false,emojiOpen=false;
+
+// Build emoji picker
+EMOJI_LIST.forEach(em=>{
+  const btn=document.createElement('button');
+  btn.className='emoji-btn-pick';btn.textContent=em;
+  btn.onclick=()=>{
+    const pos=chatInput.selectionStart,val=chatInput.value;
+    chatInput.value=val.slice(0,pos)+em+val.slice(pos);
+    chatInput.focus();chatInput.selectionStart=chatInput.selectionEnd=pos+em.length;
+    updateExpression(chatInput.value);
+  };
+  emojiPanel.appendChild(btn);
+});
+
+// Food strip
+document.querySelectorAll('.food-icon').forEach(icon=>{
+  icon.addEventListener('click',()=>{
+    const pos=chatInput.selectionStart||chatInput.value.length;
+    chatInput.value=chatInput.value.slice(0,pos)+icon.textContent+chatInput.value.slice(pos);
+    chatInput.focus();updateExpression(chatInput.value);
+    icon.style.transform='scale(1.5)';setTimeout(()=>icon.style.transform='',200);
+  });
+});
+
+function setExpression(k){
+  const face = DOG_EXPR[k]||'🐶';
+  animalExpr.textContent = face;
+  animalExpr.style.transform='scale(1.5)';
+  animalExpr.style.transition='transform 0.25s cubic-bezier(.34,1.56,.64,1)';
+  setTimeout(()=>animalExpr.style.transform='scale(1)',300);
+}
+function setHeaderFace(k){
+  headerFace.textContent = DOG_HEADER[k]||'🐶';
+  headerFace.style.transform='scale(1.3)';
+  setTimeout(()=>headerFace.style.transform='scale(1)',300);
+}
+
+function getEmojiExpression(text) {
+  // Find all emojis in the text
+  const found = [...text.matchAll(/\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu)].map(m=>m[0]);
+  if (!found.length) return null;
+  // Score each expression by frequency
+  const scores = {};
+  for (const em of found) {
+    const key = EMOJI_EXPR_MAP[em];
+    if (key) scores[key] = (scores[key]||0) + 1;
+  }
+  if (!Object.keys(scores).length) return null;
+  return Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function updateExpression(t){
+  if(!t){setExpression('idle');return;}
+  const l=t.toLowerCase();
+  // Check emoji expressions first
+  const emojiExpr = getEmojiExpression(t);
+  if(emojiExpr){ setExpression(emojiExpr); setHeaderFace(emojiExpr); return; }
+  // Text keyword fallbacks
+  if(/sad|cry|depressed|lonely|hurt|awful|heartbreak|grief/.test(l)){setExpression('crying');setHeaderFace('sad');return;}
+  if(/love|crush|heart|romantic|adore|miss you/.test(l)){setExpression('love');setHeaderFace('love');return;}
+  if(/angry|hate|furious|rage|mad|pissed/.test(l)){setExpression('angry');setHeaderFace('angry');return;}
+  if(/help|confused|what|how|why|explain/.test(l)){setExpression('confused');return;}
+  if(/excited|amazing|awesome|wow|yay|great/.test(l)){setExpression('excited');setHeaderFace('excited');return;}
+  if(/coffee|cookie|donut|food|eat|boba|cake|hungry/.test(l)){setExpression('food');setHeaderFace('food');return;}
+  if(/happy|fun|lol|haha|funny|laugh/.test(l)){setExpression('laugh');setHeaderFace('laugh');return;}
+  if(/music|song|playlist|listen/.test(l)){setExpression('music');return;}
+  if(/game|play|gaming/.test(l)){setExpression('game');return;}
+  if(/sleep|tired|night|exhausted/.test(l)){setExpression('sleepy');setHeaderFace('night');return;}
+  if(/scared|afraid|anxious|nervous|panic/.test(l)){setExpression('anxious');return;}
+  if(t.length>80)return setExpression('long');
+  setExpression('typing');
+}
+
+const getTime=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const scrollBottom=()=>chatBody.scrollTop=chatBody.scrollHeight;
+function autoResize(){chatInput.style.height='auto';chatInput.style.height=Math.min(chatInput.scrollHeight,100)+'px';}
+
+function addMessage(role,content,isEmotional=false){
+  typingIndicator.style.display='none';
+  const row=document.createElement('div');row.className=`msg-row ${role}`;
+  const av=document.createElement('div');av.className='msg-avatar';av.textContent=role==='bot'?'🐶':'🐕';
+  const wrap=document.createElement('div');
+  const bubble=document.createElement('div');bubble.className='msg-bubble';
+  bubble.innerHTML=content.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+  const time=document.createElement('span');time.className='msg-time';time.textContent=getTime();
+  wrap.appendChild(bubble);wrap.appendChild(time);
+  if(role==='bot'){row.appendChild(av);row.appendChild(wrap);}
+  else{row.appendChild(wrap);row.appendChild(av);}
+  chatBody.insertBefore(row,typingIndicator);
+
+  // Show comfort follow-up chips after emotional bot replies
+  if(role==='bot' && isEmotional){
+    const existing = chatBody.querySelector('.comfort-chips');
+    if(existing) existing.remove();
+    const chipWrap = document.createElement('div');
+    chipWrap.className='chip-row comfort-chips';
+    chipWrap.style.cssText='padding:4px 8px 8px;';
+    const comfortChips = [
+      {label:'💬 Tell me more', text:'I want to tell you more about how I feel'},
+      {label:'🥺 I just need to vent', text:'I just need to vent, please listen'},
+      {label:'💡 Give me advice', text:'Can you give me some advice?'},
+      {label:'🫂 I need comfort', text:'I need comfort right now'},
+      {label:'✨ Cheer me up', text:'Can you try to cheer me up?'},
+      {label:'🌸 I\'m a little better', text:'I feel a little better, thank you Nomi'},
+    ];
+    comfortChips.forEach(c=>{
+      const btn=document.createElement('span');
+      btn.className='chip';btn.textContent=c.label;
+      btn.onclick=()=>{chipWrap.remove();sendChip(c.text);};
+      chipWrap.appendChild(btn);
+    });
+    chatBody.insertBefore(chipWrap, typingIndicator);
+  }
+
+  scrollBottom();
+}
+
+function showTyping(show){
+  typingIndicator.style.display=show?'flex':'none';
+  thinkingLabel.style.display=show?'block':'none';
+  if(show)scrollBottom();
+}
+
+const EMOTIONAL_CATEGORIES = new Set(['heartbreak','grief','anger','anxiety','loneliness','stress','selfDoubt','cantSleep','needHug','crying','overwhelmedWithLife','sad','burnout','failure','identity','happiness','future','relationship']);
+
+function isEmotionalReply(reply){
+  return /bestie|I hear you|I'm here|you're not alone|come here|sit with me|hug|valid|safe space|cry|hurt|heavy|let it out|listening|💔|🥺|💛|🌸|💕|💗/i.test(reply);
+}
+
+function sendMessage(userText){
+  if(!userText.trim()||isTyping)return;
+  isTyping=true;
+  // Remove comfort chips when user sends a new message
+  const cc=chatBody.querySelector('.comfort-chips');if(cc)cc.remove();
+  addMessage('user',userText);
+  // Set expression based on emojis in user message
+  const emojiExprKey = getEmojiExpression(userText);
+  if(emojiExprKey){ setExpression(emojiExprKey); setHeaderFace(emojiExprKey); }
+  else { setExpression('thinking');setHeaderFace('thinking'); }
+  statusText.textContent='Nomi is sniffing out an answer~ 🐾';
+  showTyping(true);sendBtn.disabled=true;
+  chatInput.value='';chatInput.style.height='auto';
+
+  const delay = 500 + Math.random()*700;
+  setTimeout(()=>{
+    const reply = getNomiResponse(userText);
+    const emotional = isEmotionalReply(reply);
+    msgCount++;
+    showTyping(false);
+    addMessage('bot',reply,emotional);
+    if(emotional){
+      setExpression('sad');setHeaderFace('idle');
+      statusText.textContent='Nomi is here for you~ 💛🐾';
+    } else {
+      setExpression('happy');setHeaderFace('responding');
+      statusText.textContent='Woof~ always here for you! 🐾';
+    }
+    setTimeout(()=>{setExpression('idle');setHeaderFace('idle');},2000);
+    isTyping=false;sendBtn.disabled=false;chatInput.focus();
+  }, delay);
+}
+
+function sendChip(text){if(isTyping)return;chatInput.value=text;updateExpression(text);sendMessage(text);}
+
+chatInput.addEventListener('input',()=>{autoResize();updateExpression(chatInput.value);});
+chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage(chatInput.value);}});
+sendBtn.addEventListener('click',()=>sendMessage(chatInput.value));
+emojiToggle.addEventListener('click',()=>{
+  emojiOpen=!emojiOpen;
+  emojiPanel.classList.toggle('open',emojiOpen);
+  emojiToggle.textContent=emojiOpen?'✕':'😊';
+});
+document.addEventListener('click',e=>{
+  if(!emojiPanel.contains(e.target)&&e.target!==emojiToggle){
+    emojiOpen=false;emojiPanel.classList.remove('open');emojiToggle.textContent='😊';
+  }
+});
+chatInput.focus();
+</script>
+</body>
+</html>
